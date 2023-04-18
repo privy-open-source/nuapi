@@ -134,11 +134,11 @@ export function createApi (options: ApiConfig = {}): ApiInstance {
   }
 
   return Object.assign(instance, {
-    cancel   : dedupe.cancel.bind(dedupe),
-    cancelAll: dedupe.cancelAll.bind(dedupe),
     queue,
     dedupe,
     hooks,
+    cancel   : dedupe.cancel.bind(dedupe),
+    cancelAll: dedupe.cancelAll.bind(dedupe),
     create   : function (this: ApiInstance, newOptions: ApiConfig = {}): ApiInstance {
       const instance = createApi(defu(
         newOptions,
@@ -246,18 +246,27 @@ export function addHook<K extends keyof Hooks> (name: K, fn: Hooks[K], instance:
 export function addHook<K extends keyof Hooks> (name: K, fn: Hooks[K], instance = useApi()): number | undefined {
   let id: number | undefined
 
-  // eslint-disable-next-line unicorn/prefer-switch
-  if (name === 'onRequest')
-    id = instance.interceptors.request.use((config) => fn(config) ?? Promise.resolve(config))
+  switch (name) {
+    case 'onRequest': {
+      id = instance.interceptors.request.use((config) => fn(config) ?? Promise.resolve(config))
+      break
+    }
 
-  else if (name === 'onRequestError')
-    id = instance.interceptors.request.use(undefined, (error) => fn(error) ?? Promise.reject(error))
+    case 'onRequestError': {
+      id = instance.interceptors.request.use(undefined, (error) => fn(error) ?? Promise.reject(error))
+      break
+    }
 
-  else if (name === 'onResponse')
-    id = instance.interceptors.response.use((response) => fn(response) ?? Promise.resolve(response))
+    case 'onResponse': {
+      id = instance.interceptors.response.use((response) => fn(response) ?? Promise.resolve(response))
+      break
+    }
 
-  else if (name === 'onResponseError')
-    id = instance.interceptors.response.use(undefined, (error) => fn(error) ?? Promise.reject(error))
+    case 'onResponseError': {
+      id = instance.interceptors.response.use(undefined, (error) => fn(error) ?? Promise.reject(error))
+      break
+    }
+  }
 
   if (id !== undefined)
     instance.hooks[name].set(id, fn)

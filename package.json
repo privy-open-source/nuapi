@@ -1,20 +1,33 @@
 {
   "name": "@privyid/nuapi",
   "version": "0.1.0",
-  "description": "Opinionated Rest Client, Powered by Axios",
+  "description": "Nuxt HTTP Client module",
   "packageManager": "yarn@3.5.0",
   "repository": "your-org/my-module",
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/types.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./module": {
       "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
+  "typesVersions": {
+    "*": {
+      "module": [
+        "./dist/types.d.ts"
+      ]
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],

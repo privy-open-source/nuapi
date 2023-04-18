@@ -14,11 +14,11 @@ Find and replace all on all files (CMD+SHIFT+F):
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
-Opinionated Rest Client, Powered by Axios
+> Nuxt HTTP Client module
 
 - [✨ &nbsp;Release Notes](/CHANGELOG.md)
-<!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/@privyid/nuapi?file=playground%2Fapp.vue) -->
 - [📖 &nbsp;Documentation](https://www.jsdocs.io/package/@privyid/nuapi)
+<!-- - [🏀 Online playground](https://stackblitz.com/github/your-org/@privyid/nuapi?file=playground%2Fapp.vue) -->
 
 ## Features
 
@@ -145,7 +145,7 @@ useApi().get('/document/load', {
 
 Sometime, you want to cancel request with same endpoint like when you working with searching or filter.
 
-NuGrpc API has built in function for this case. Just set `requestId`, multiple sent request with same id will cancel last request before.
+NuAPI has built in function for this case. Just set `requestId`, multiple sent request with same id will cancel last request before.
 
 ```ts
 useApi().get('/document/load', {
@@ -154,46 +154,29 @@ useApi().get('/document/load', {
 ```
 ## API
 
-:point_right: You can learn more about usage in [JSDocs Documentation](https://www.jsdocs.io/package/@privyid/nuapi).
+👉 You can learn more about usage in [JSDocs Documentation](https://www.jsdocs.io/package/@privyid/nuapi).
 
-## Development
+## Contribution
 
-```bash
-# Install dependencies
-yarn install
-
-# Generate type stubs
-yarn dev:prepare
-
-# Develop with the playground
-yarn dev
-
-# Build the playground
-yarn dev:build
-
-# Run ESLint
-yarn lint
-
-# Run Vitest
-yarn test
-yarn test:watch
-
-# Release new version
-yarn release
-```
+- Clone this repository
+- Play [Nyan Cat](https://www.youtube.com/watch?v=QH2-TGUlwu4) in the background (really important!)
+- Enable [Corepack](https://github.com/nodejs/corepack) using `corepack enable` (use `npm i -g corepack` for Node.js < 16.10)
+- Run `yarn install`
+- Run `yarn dev:prepare` to generate type stubs.
+- Use `yarn dev` to start [playground](./playground) in development mode.
 
 ## License
 [MIT](/LICENSE) License
 
 <!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/@privyid/nuapi/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-version-src]: https://img.shields.io/npm/v/@privyid/nuapi/latest.svg?style=for-the-badge&colorA=18181B&colorB=28CF8D
 [npm-version-href]: https://npmjs.com/package/@privyid/nuapi
 
-[npm-downloads-src]: https://img.shields.io/npm/dm/@privyid/nuapi.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-downloads-src]: https://img.shields.io/npm/dm/@privyid/nuapi.svg?style=for-the-badge&colorA=18181B&colorB=28CF8D
 [npm-downloads-href]: https://npmjs.com/package/@privyid/nuapi
 
-[license-src]: https://img.shields.io/npm/l/@privyid/nuapi.svg?style=flat&colorA=18181B&colorB=28CF8D
+[license-src]: https://img.shields.io/npm/l/@privyid/nuapi.svg?style=for-the-badge&colorA=18181B&colorB=28CF8D
 [license-href]: https://npmjs.com/package/@privyid/nuapi
 
-[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt.js
+[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?style=for-the-badge&logo=nuxt.js
 [nuxt-href]: https://nuxt.com
