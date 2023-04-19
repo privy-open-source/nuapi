@@ -7,7 +7,7 @@ import {
   type ApiConfig,
   createApi,
   setApi,
-} from '..'
+} from '../core'
 import getURL from 'requrl'
 import { joinURL } from 'ufo'
 

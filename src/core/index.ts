@@ -3,7 +3,6 @@ import type {
   AxiosStatic,
   AxiosResponse,
   AxiosRequestConfig,
-  AxiosAdapter,
 } from 'axios'
 import Axios from 'axios'
 import defu from 'defu'
@@ -117,7 +116,7 @@ export function createApi (options: ApiConfig = {}): ApiInstance {
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const originalAdapter = options.adapter ?? Axios.defaults.adapter!
-  const queue           = new QueueAdapter(originalAdapter as AxiosAdapter, options.queue)
+  const queue           = new QueueAdapter(originalAdapter, options.queue)
   const dedupe          = new DedupeAdapter(queue.adapter())
   const adapter         = dedupe.adapter()
   const instance        = Axios.create({

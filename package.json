@@ -3,31 +3,34 @@
   "version": "0.1.0",
   "description": "Nuxt HTTP Client module",
   "packageManager": "yarn@3.5.0",
-  "repository": "your-org/my-module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/privy-open-source/nuapi.git"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./module": {
       "import": "./dist/module.mjs",
       "require": "./dist/module.cjs",
       "types": "./dist/types.d.ts"
+    },
+    "./core": {
+      "import": "./dist/core.mjs",
+      "require": "./dist/core.cjs",
+      "types": "./dist/core.d.ts"
     }
   },
   "typesVersions": {
     "*": {
-      "module": [
-        "./dist/types.d.ts"
+      "core": [
+        "./dist/core.d.ts"
       ]
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/module.cjs",
+  "module": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
   "files": [
     "dist"
   ],
@@ -40,8 +43,8 @@
     "release": "yarn lint && yarn coverage && yarn prepack && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint . --ext .js,.vue,.ts --format pretty",
     "fix": "yarn lint --fix",
-    "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "test": "vitest src",
+    "coverage": "vitest run src --coverage"
   },
   "dependencies": {
     "@nuxt/kit": "^3.4.1",

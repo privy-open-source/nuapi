@@ -225,7 +225,7 @@ describe('Inherit instance', () => {
 
     const response = await b.get('/api/user')
 
-    expect(response.config.headers.foo).toBe('bar')
+    expect(response.config.headers?.foo).toBe('bar')
     expect(response.data.data).toBe('v2')
   })
 

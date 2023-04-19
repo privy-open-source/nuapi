@@ -43,7 +43,7 @@ yarn add --dev @privyid/nuapi
 ```js
 export default defineNuxtConfig({
   modules: [
-    '@privyid/nuapi/modules'
+    '@privyid/nuapi'
   ]
 })
 ```
@@ -96,7 +96,7 @@ import {
   onError,
   getCode,
   getMessage,
-} from '@privyid/nuapi'
+} from '@privyid/nuapi/core'
 
 function isUnauthorize (error: Error): boolean {
   const code    = getCode(error)

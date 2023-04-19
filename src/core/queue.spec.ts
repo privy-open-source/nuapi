@@ -20,16 +20,31 @@ afterEach(() => {
 })
 
 describe('QueueAdapter', () => {
-  it('should run 2 requests first, and queue last 2 requests', async () => {
+  it('should run 3 requests first, and queue last 3 requests', async () => {
     mock.onGet('/ping').reply(200, 'Pong')
 
     const result: number[] = []
-    const api              = createApi({ queue: { worker: 2 } })
+    const api              = createApi({ queue: { worker: 3 } })
 
-    await Promise.race([Promise.all([api.get('/ping').then(() => result.push(1)), api.get('/ping').then(() => result.push(2))]), Promise.all([api.get('/ping').then(() => result.push(3)), api.get('/ping').then(() => result.push(4))])])
+    await Promise.race([
+      Promise.all([
+        api.get('/ping').then(() => result.push(1)),
+        api.get('/ping').then(() => result.push(2)),
+        api.get('/ping').then(() => result.push(3)),
+      ]),
+      Promise.all([
+        api.get('/ping').then(() => result.push(4)),
+        api.get('/ping').then(() => result.push(5)),
+        api.get('/ping').then(() => result.push(6)),
+      ]),
+    ])
 
-    expect(result).toHaveLength(2)
-    expect(result).toStrictEqual([1, 2])
+    expect(result).toHaveLength(3)
+    expect(result).toStrictEqual([
+      1,
+      2,
+      3,
+    ])
   })
 
   it('should run request with higher priority first', async () => {
@@ -40,19 +55,19 @@ describe('QueueAdapter', () => {
 
     await Promise.all([
       api.get('/ping').then(() => result.push(1)),
-      api.get('/ping', { priority: 2 }).then(() => result.push(2)),
+      api.get('/ping').then(() => result.push(2)),
       api.get('/ping', { priority: 3 }).then(() => result.push(3)),
       api.get('/ping').then(() => result.push(4)),
-      api.get('/ping').then(() => result.push(5)),
+      api.get('/ping', { priority: 5 }).then(() => result.push(5)),
     ])
 
     expect(result).toHaveLength(5)
     expect(result).toStrictEqual([
       1,
+      5,
       3,
       2,
       4,
-      5,
     ])
   })
 })

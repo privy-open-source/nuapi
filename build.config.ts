@@ -1,7 +1,12 @@
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
-  entries    : ['./src/index'],
+  entries: [
+    {
+      name : 'core',
+      input: 'src/core/index',
+    },
+  ],
   declaration: true,
   rollup     : {
     emitCJS  : true,

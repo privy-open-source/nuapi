@@ -7,7 +7,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useApi } from '../src/'
+import { useApi } from '../src/core'
 
 const users = ref([])
 
