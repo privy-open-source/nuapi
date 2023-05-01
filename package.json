@@ -2,7 +2,7 @@
   "name": "@privyid/nuapi",
   "version": "0.2.0",
   "description": "Nuxt HTTP Client module",
-  "packageManager": "yarn@3.5.0",
+  "packageManager": "yarn@3.5.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/privy-open-source/nuapi.git"
