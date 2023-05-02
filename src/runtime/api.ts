@@ -7,7 +7,7 @@ import {
   type ApiConfig,
   createApi,
   setApi,
-} from '../core'
+} from '@privyid/nuapi/core'
 import getURL from 'requrl'
 import { joinURL } from 'ufo'
 
