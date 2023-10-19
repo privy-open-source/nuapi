@@ -15,8 +15,15 @@ export default defineNuxtModule({
     const { resolve } = createResolver(import.meta.url)
 
     addPlugin({
-      mode: 'all',
-      src : resolve('runtime/api'),
+      mode : 'server',
+      src  : resolve('runtime/api.server'),
+      order: -20,
+    })
+
+    addPlugin({
+      mode : 'client',
+      src  : resolve('runtime/api.client'),
+      order: -20,
     })
 
     extendViteConfig((config) => {
