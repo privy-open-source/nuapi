@@ -47,18 +47,19 @@
     "coverage": "vitest run src --coverage"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.4.1",
+    "@nuxt/kit": "^3.7.4",
     "axios": "1.1.3",
     "defu": "^6.1.2",
     "requrl": "^3.0.2",
-    "ufo": "^1.1.1"
+    "ufo": "^1.3.1"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.1.1",
     "@nuxt/module-builder": "^0.3.0",
-    "@nuxt/schema": "^3.4.1",
-    "@nuxt/test-utils": "^3.4.1",
+    "@nuxt/schema": "^3.7.4",
+    "@nuxt/test-utils": "^3.7.4",
     "@privyid/eslint-config-persona": "^0.12.0",
+    "@privyid/nhp": "^0.4.0",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "@vitest/coverage-c8": "^0.30.1",
@@ -76,7 +77,7 @@
     "eslint-plugin-unicorn": "^46.0.0",
     "eslint-plugin-varspacing": "^1.2.2",
     "eslint-plugin-vue": "^9.11.0",
-    "nuxt": "^3.4.1",
+    "nuxt": "^3.7.4",
     "typescript": "^5.0.4",
     "vitest": "^0.30.1"
   },
