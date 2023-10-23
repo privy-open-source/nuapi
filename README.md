@@ -23,8 +23,9 @@ Find and replace all on all files (CMD+SHIFT+F):
 ## Features
 
 <!-- Highlight some of the features your module provide here -->
+- ✅ Using Fetch instead of XHR
 - ✅ Built-in adapter for Dedupe, and Priority Queue request.
-- ✅ Composible hook for Axios interceptors.
+- ✅ Composable hook for Axios interceptors.
 
 ## Compabilities
 
@@ -102,7 +103,7 @@ function isUnauthorize (error: Error): boolean {
   const code    = getCode(error)
   const message = getMessage(error)
 
-  return code === 401 && message === 'Unauthorized'
+  return code === 401 && message.includes('Unauthorized')
 }
 
 /** set additional or custom headers */

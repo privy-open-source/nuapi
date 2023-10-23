@@ -8,18 +8,18 @@ import Axios from 'axios'
 import defu from 'defu'
 import DedupeAdapter from './dedupe'
 import QueueAdapter, { type QueueOptions } from './queue'
-import { joinURL } from 'ufo'
+import FetchAdapter from './fetch'
 
 declare module 'axios' {
   export interface AxiosRequestConfig {
     priority?: number,
     requestId?: string,
+    prefixURL?: string,
   }
 }
 
 export interface ApiConfig extends AxiosRequestConfig {
   queue?: QueueOptions,
-  prefixURL?: string,
 }
 
 type onFulfilledOf<T> = T extends (onFulfilled: infer R) => number ? NonNullable<R> : never
@@ -110,20 +110,12 @@ export const setApi = useApi.setApi
  * @param options
  */
 export function createApi (options: ApiConfig = {}): ApiInstance {
-  const baseURL = (options.prefixURL && options.baseURL)
-    ? joinURL(options.baseURL, options.prefixURL)
-    : options.baseURL
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const originalAdapter = options.adapter ?? Axios.defaults.adapter!
-  const queue           = new QueueAdapter(originalAdapter, options.queue)
+  const originalAdapter = Axios.getAdapter(options.adapter ?? Axios.defaults.adapter)
+  const fetch           = new FetchAdapter(originalAdapter)
+  const queue           = new QueueAdapter(fetch.adapter(), options.queue)
   const dedupe          = new DedupeAdapter(queue.adapter())
   const adapter         = dedupe.adapter()
-  const instance        = Axios.create({
-    ...options,
-    baseURL,
-    adapter,
-  })
+  const instance        = Axios.create({ ...options, adapter })
 
   const hooks: HooksMap = {
     onRequest      : new Map(),

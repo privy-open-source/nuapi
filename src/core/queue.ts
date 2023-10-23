@@ -1,14 +1,13 @@
-import type {
-  AxiosAdapter,
-  AxiosPromise,
-  AxiosResponse,
-  AxiosRequestConfig,
+import Axios, {
+  type AxiosAdapter,
+  type AxiosPromise,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
 } from 'axios'
-import Axios from 'axios'
 import defu from 'defu'
 
 interface QueueJob {
-  config: AxiosRequestConfig,
+  config: InternalAxiosRequestConfig,
   priority: number,
   resolve: (value: AxiosResponse | PromiseLike<AxiosResponse>) => void,
   reject: (reason: unknown) => void,
@@ -55,7 +54,7 @@ export default class QueueAdapter {
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
-  add (config: AxiosRequestConfig): AxiosPromise {
+  add (config: InternalAxiosRequestConfig): AxiosPromise {
     return new Promise((resolve, reject) => {
       const onResolved: QueueJob['resolve'] = (response) => {
         resolve(response)
