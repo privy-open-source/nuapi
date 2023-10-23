@@ -30,7 +30,7 @@ export default class QueueAdapter {
     this.options = defu(options, { worker: 5 })
   }
 
-  enqueue (value: QueueJob) {
+  protected enqueue (value: QueueJob) {
     let index = 0
     let count = this.queue.length
 
@@ -49,12 +49,12 @@ export default class QueueAdapter {
     this.queue.splice(index, 0, value)
   }
 
-  dequeue () {
+  protected dequeue () {
     return this.queue.pop()
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
-  add (config: InternalAxiosRequestConfig): AxiosPromise {
+  protected add (config: InternalAxiosRequestConfig): AxiosPromise {
     return new Promise((resolve, reject) => {
       const onResolved: QueueJob['resolve'] = (response) => {
         resolve(response)
@@ -92,7 +92,7 @@ export default class QueueAdapter {
     })
   }
 
-  run () {
+  protected run () {
     if (this.queue.length > 0 && this.process < this.options.worker) {
       this.process++
 
@@ -112,7 +112,7 @@ export default class QueueAdapter {
     }
   }
 
-  adapter (): AxiosAdapter {
+  public adapter (): AxiosAdapter {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     return (config) => {
       return this.add(config)

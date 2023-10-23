@@ -9,19 +9,19 @@ export default class DedupeAdapter {
     this.limit = new Map()
   }
 
-  cancel (requestId: string) {
+  public cancel (requestId: string) {
     const controller = this.limit.get(requestId)
 
     if (controller)
       controller.abort()
   }
 
-  cancelAll () {
+  public cancelAll () {
     for (const controller of this.limit.values())
       controller.abort()
   }
 
-  adapter (): AxiosAdapter {
+  public adapter (): AxiosAdapter {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     return (config) => {
       const requestId = config.requestId
