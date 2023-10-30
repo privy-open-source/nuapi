@@ -47,7 +47,8 @@ export default class DedupeAdapter {
           .then(resolve)
           .catch(reject)
           .finally(() => {
-            this.limit.delete(requestId)
+            if (this.limit.get(requestId) === controller)
+              this.limit.delete(requestId)
 
             if (config.signal)
               config.signal.removeEventListener?.('abort', onAborted)
