@@ -100,15 +100,21 @@ export default class QueueAdapter {
       const job    = this.dequeue()!
       const signal = job.config.signal
 
-      if (signal?.aborted !== true) {
-        this.fetch(job.config)
-          .then(job.resolve)
-          .catch(job.reject)
-          .finally(() => {
-            this.process--
-            this.run()
-          })
+      // Skip to next job if already aborted
+      if (signal?.aborted) {
+        this.process--
+        this.run()
+
+        return
       }
+
+      this.fetch(job.config)
+        .then(job.resolve)
+        .catch(job.reject)
+        .finally(() => {
+          this.process--
+          this.run()
+        })
     }
   }
 
