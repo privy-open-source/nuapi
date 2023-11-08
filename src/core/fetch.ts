@@ -3,7 +3,10 @@ import {
   type AxiosAdapter,
   type AxiosResponse,
 } from 'axios'
-import { joinURL } from 'ufo'
+import {
+  joinURL,
+  cleanDoubleSlashes,
+} from 'ufo'
 import {
   ofetch,
   FetchError,
@@ -21,14 +24,20 @@ export default class FetchAdapter {
   }
 
   getBaseURL (config: InternalAxiosRequestConfig) {
+    let result: string = '/'
+
     if (config.baseURL && config.prefixURL)
-      return joinURL(config.baseURL, config.prefixURL)
+      result = joinURL(config.baseURL, config.prefixURL)
 
-    if (config.baseURL)
-      return config.baseURL
+    else if (config.baseURL)
+      result = config.baseURL
 
-    if (config.prefixURL)
-      return config.prefixURL
+    else if (config.prefixURL)
+      result = config.prefixURL
+
+    return cleanDoubleSlashes(result)
+      .replace('localhost', '127.0.0.1')
+      .replace('0.0.0.0', '127.0.0.1')
   }
 
   getResponseType (config: InternalAxiosRequestConfig): ResponseType | undefined {
