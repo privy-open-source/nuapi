@@ -36,8 +36,6 @@ export default class FetchAdapter {
       result = config.prefixURL
 
     return cleanDoubleSlashes(result)
-      .replace('localhost', '127.0.0.1')
-      .replace('0.0.0.0', '127.0.0.1')
   }
 
   getResponseType (config: InternalAxiosRequestConfig): ResponseType | undefined {

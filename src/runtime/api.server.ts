@@ -1,6 +1,7 @@
 import {
   useRuntimeConfig,
   useRequestEvent,
+  useRequestHeaders,
   defineNuxtPlugin,
 } from '#imports'
 import {
@@ -19,8 +20,9 @@ declare module 'h3' {
 }
 
 export default defineNuxtPlugin(() => {
-  const event  = useRequestEvent()
-  const config = useRuntimeConfig()
+  const event   = useRequestEvent()
+  const config  = useRuntimeConfig()
+  const headers = useRequestHeaders()
 
   let instance = event.$api
 
@@ -30,7 +32,7 @@ export default defineNuxtPlugin(() => {
 
     const options: ApiConfig = {
       baseURL,
-      headers: { 'accept-encoding': 'gzip, deflate' },
+      headers,
     }
 
     instance   = createApi(options)
