@@ -1771,21 +1771,21 @@ __metadata:
   linkType: hard
 
 "@nuxt/module-builder@npm:^0.5.0":
-  version: 0.5.2
-  resolution: "@nuxt/module-builder@npm:0.5.2"
+  version: 0.5.5
+  resolution: "@nuxt/module-builder@npm:0.5.5"
   dependencies:
-    citty: ^0.1.4
+    citty: ^0.1.5
     consola: ^3.2.3
     mlly: ^1.4.2
     pathe: ^1.1.1
     unbuild: ^2.0.0
   peerDependencies:
-    "@nuxt/kit": ^3.7.4
-    nuxi: ^3.9.0
+    "@nuxt/kit": ^3.8.2
+    nuxi: ^3.10.0
   bin:
     nuxt-build-module: dist/cli.mjs
     nuxt-module-build: dist/cli.mjs
-  checksum: db357a26ff7f3d02ed00f41effd64a88a4918327dab126d6aa0529d80648c12646b813b7224705163bce25abc060533248efa8e87f6ff5cb74b45e0a33b305ef
+  checksum: f17ef051735666b016ef92dc2d1681f04caf15d5181105d35c2a0a79661155facec7d54dd9072782a7f150fc534798df19de3dc2d97ceefb4e5d96056e27db12
   languageName: node
   linkType: hard
 
