@@ -3,6 +3,7 @@ import {
   useRequestEvent,
   useRequestHeaders,
   defineNuxtPlugin,
+  useRequestURL,
 } from '#imports'
 import {
   type ApiConfig,
@@ -10,7 +11,6 @@ import {
   createApi,
   setApi,
 } from '@privyid/nuapi/core'
-import getURL from 'requrl'
 import { joinURL } from 'ufo'
 
 declare module 'h3' {
@@ -20,15 +20,17 @@ declare module 'h3' {
 }
 
 export default defineNuxtPlugin(() => {
-  const event   = useRequestEvent()
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const event   = useRequestEvent()!
+  const url     = useRequestURL()
   const config  = useRuntimeConfig()
   const headers = useRequestHeaders()
 
   let instance = event.$api
 
   if (!instance) {
-    const host    = getURL(event?.node?.req)
-    const baseURL = joinURL(host, config.app.baseURL)
+    const origin  = url.origin
+    const baseURL = joinURL(origin, config.app.baseURL)
 
     const options: ApiConfig = {
       baseURL,
