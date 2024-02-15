@@ -11,8 +11,8 @@ import { joinURL } from 'ufo'
 
 export default defineNuxtPlugin(() => {
   const config  = useRuntimeConfig()
-  const host    = window.location.origin
-  const baseURL = joinURL(host, config.app.baseURL)
+  const origin  = window.location.origin
+  const baseURL = joinURL(origin, config.app.baseURL)
 
   const options: ApiConfig = {
     baseURL,

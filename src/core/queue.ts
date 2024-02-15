@@ -1,14 +1,13 @@
-import type {
-  AxiosAdapter,
-  AxiosPromise,
-  AxiosResponse,
-  AxiosRequestConfig,
+import Axios, {
+  type AxiosAdapter,
+  type AxiosPromise,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
 } from 'axios'
-import Axios from 'axios'
 import defu from 'defu'
 
 interface QueueJob {
-  config: AxiosRequestConfig,
+  config: InternalAxiosRequestConfig,
   priority: number,
   resolve: (value: AxiosResponse | PromiseLike<AxiosResponse>) => void,
   reject: (reason: unknown) => void,
@@ -31,7 +30,7 @@ export default class QueueAdapter {
     this.options = defu(options, { worker: 5 })
   }
 
-  enqueue (value: QueueJob) {
+  protected enqueue (value: QueueJob) {
     let index = 0
     let count = this.queue.length
 
@@ -50,12 +49,12 @@ export default class QueueAdapter {
     this.queue.splice(index, 0, value)
   }
 
-  dequeue () {
+  protected dequeue () {
     return this.queue.pop()
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
-  add (config: AxiosRequestConfig): AxiosPromise {
+  protected add (config: InternalAxiosRequestConfig): AxiosPromise {
     return new Promise((resolve, reject) => {
       const onResolved: QueueJob['resolve'] = (response) => {
         resolve(response)
@@ -93,7 +92,7 @@ export default class QueueAdapter {
     })
   }
 
-  run () {
+  protected run () {
     if (this.queue.length > 0 && this.process < this.options.worker) {
       this.process++
 
@@ -101,19 +100,25 @@ export default class QueueAdapter {
       const job    = this.dequeue()!
       const signal = job.config.signal
 
-      if (signal?.aborted !== true) {
-        this.fetch(job.config)
-          .then(job.resolve)
-          .catch(job.reject)
-          .finally(() => {
-            this.process--
-            this.run()
-          })
+      // Skip to next job if already aborted
+      if (signal?.aborted) {
+        this.process--
+        this.run()
+
+        return
       }
+
+      this.fetch(job.config)
+        .then(job.resolve)
+        .catch(job.reject)
+        .finally(() => {
+          this.process--
+          this.run()
+        })
     }
   }
 
-  adapter (): AxiosAdapter {
+  public adapter (): AxiosAdapter {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     return (config) => {
       return this.add(config)
