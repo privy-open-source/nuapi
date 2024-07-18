@@ -2612,22 +2612,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/module-builder@npm:0.5.5":
-  version: 0.5.5
-  resolution: "@nuxt/module-builder@npm:0.5.5"
+"@nuxt/module-builder@npm:0.8.1":
+  version: 0.8.1
+  resolution: "@nuxt/module-builder@npm:0.8.1"
   dependencies:
-    citty: ^0.1.5
+    citty: ^0.1.6
     consola: ^3.2.3
-    mlly: ^1.4.2
-    pathe: ^1.1.1
+    defu: ^6.1.4
+    magic-regexp: ^0.8.0
+    mlly: ^1.7.1
+    pathe: ^1.1.2
+    pkg-types: ^1.1.1
+    tsconfck: ^3.1.1
     unbuild: ^2.0.0
   peerDependencies:
-    "@nuxt/kit": ^3.8.2
-    nuxi: ^3.10.0
+    "@nuxt/kit": ^3.12.2
+    nuxi: ^3.12.0
   bin:
     nuxt-build-module: dist/cli.mjs
     nuxt-module-build: dist/cli.mjs
-  checksum: f17ef051735666b016ef92dc2d1681f04caf15d5181105d35c2a0a79661155facec7d54dd9072782a7f150fc534798df19de3dc2d97ceefb4e5d96056e27db12
+  checksum: 4e319c62a59920402af67ea60dd59e572c8b189181da49b1096ed8026aeb04b561343a4d9a7480cefd870cef73f167fd8e65de0cc464ebe998249cf3dd7b6ba3
   languageName: node
   linkType: hard
 
@@ -3118,7 +3122,7 @@ __metadata:
   dependencies:
     "@nuxt/eslint-config": 0.3.13
     "@nuxt/kit": ^3.7.4
-    "@nuxt/module-builder": 0.5.5
+    "@nuxt/module-builder": 0.8.1
     "@nuxt/schema": 3.12.3
     "@nuxt/test-utils": 3.13.1
     "@privyid/eslint-config-persona": 0.27.0
@@ -10117,6 +10121,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"magic-regexp@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "magic-regexp@npm:0.8.0"
+  dependencies:
+    estree-walker: ^3.0.3
+    magic-string: ^0.30.8
+    mlly: ^1.6.1
+    regexp-tree: ^0.1.27
+    type-level-regexp: ~0.1.17
+    ufo: ^1.4.0
+    unplugin: ^1.8.3
+  checksum: 970589ec1c537755818464dd97e91177007724703f35e7729f209204c5e4ef644f1b3a994512a6864f2e8248d1029f05376842c15c1fe4a9e0be47caf93e9e7a
+  languageName: node
+  linkType: hard
+
 "magic-string-ast@npm:^0.6.0":
   version: 0.6.2
   resolution: "magic-string-ast@npm:0.6.2"
@@ -13729,6 +13748,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsconfck@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "tsconfck@npm:3.1.1"
+  peerDependencies:
+    typescript: ^5.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  bin:
+    tsconfck: bin/tsconfck.js
+  checksum: 92941c76f5a996a96b5d92c88d20f67c644bb04cfeb9e5d4d2fed5a8ecce207fc70334a6257e3c146a117aa88b75adabc0989ee8d80a4935745f2774bf3f50fe
+  languageName: node
+  linkType: hard
+
 "tsconfig-paths@npm:^3.15.0":
   version: 3.15.0
   resolution: "tsconfig-paths@npm:3.15.0"
@@ -13821,6 +13854,13 @@ __metadata:
   version: 4.4.0
   resolution: "type-fest@npm:4.4.0"
   checksum: 0b8ae68c3a87e76ad41a317604b8864ee59dbaad095957ebeea8e95d22d8a269ad6d55fe28e16d645a05a8bdfc633e7f706019d6616a8194ae54cbabb36dec2b
+  languageName: node
+  linkType: hard
+
+"type-level-regexp@npm:~0.1.17":
+  version: 0.1.17
+  resolution: "type-level-regexp@npm:0.1.17"
+  checksum: b871cdb21760145ef3a5ce3423f90d8ca4e88955be9cb4f785e141933edc314c6fc3f5202c91c8751cd8920832971154f36edb661991b8b36d85a014f66779c4
   languageName: node
   linkType: hard
 
@@ -14167,7 +14207,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unplugin@npm:^1.10.1, unplugin@npm:^1.11.0":
+"unplugin@npm:^1.10.1, unplugin@npm:^1.11.0, unplugin@npm:^1.8.3":
   version: 1.11.0
   resolution: "unplugin@npm:1.11.0"
   dependencies:
