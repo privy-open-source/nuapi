@@ -1,5 +1,3 @@
-import Axios from 'axios'
-import MockAdapter from 'axios-mock-adapter'
 import { useApi } from '.'
 import {
   getCode,
@@ -7,36 +5,18 @@ import {
   isApiError,
 } from './error'
 import {
-  beforeAll,
-  afterEach,
   describe,
   it,
   expect,
 } from 'vitest'
 
-let mock: MockAdapter
-
-beforeAll(() => {
-  mock = new MockAdapter(Axios)
-})
-
-afterEach(() => {
-  mock.reset()
-})
-
 describe('Error utils', () => {
   describe('getCode', () => {
     it('should be able to get error code with getCode()', async () => {
-      mock.onGet('/api/user').reply(422, {
-        code   : 422,
-        message: 'Validation Error',
-        details: [],
-      })
-
       const api = useApi()
 
       try {
-        await api.get('/api/user')
+        await api.get('/api/error/422')
       } catch (error) {
         const code = getCode(error)
 
@@ -54,16 +34,10 @@ describe('Error utils', () => {
 
   describe('getMessage', () => {
     it('should return error message in response body if present', async () => {
-      mock.onGet('/api/user').reply(422, {
-        code   : 422,
-        message: 'Validation Error',
-        details: [],
-      })
-
       const api = useApi()
 
       try {
-        await api.get('/api/user')
+        await api.get('/api/error/422')
       } catch (error) {
         const message = getMessage(error)
 
@@ -72,19 +46,14 @@ describe('Error utils', () => {
     })
 
     it('should return error message in if response body has no error\'s message', async () => {
-      mock.onGet('/api/user').reply(422, {
-        code   : 422,
-        details: [],
-      })
-
       const api = useApi()
 
       try {
-        await api.get('/api/user')
+        await api.get('/api/error/404')
       } catch (error) {
         const message = getMessage(error)
 
-        expect(message).toBe('Request failed with status code 422')
+        expect(message).toBe('Request failed with status code 404')
       }
     })
 
@@ -98,22 +67,10 @@ describe('Error utils', () => {
 
   describe('isApiError()', () => {
     it('should be able to check error is ApiError or not with isApiError()', async () => {
-      mock.onGet('/api/invalid').reply(500, 'Internal Server Error')
-      mock.onGet('/api/user').reply(422, {
-        code   : 422,
-        message: 'Validation Error',
-        details: [
-          {
-            type_url: 'type_url',
-            value   : 'base64string',
-          },
-        ],
-      })
-
       const api          = useApi()
       const normalError  = new Error('Not Error')
-      const resposeError = await (api.get('/api/not-found').catch((error) => error))
-      const grpcError    = await (api.get('/api/user').catch((error) => error))
+      const resposeError = await (api.get('/api/error/500', { retry: false }).catch((error) => error))
+      const grpcError    = await (api.get('/api/error/422').catch((error) => error))
 
       expect(isApiError(normalError)).toBe(false)
       expect(isApiError(resposeError)).toBe(false)

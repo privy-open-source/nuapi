@@ -1,8 +1,5 @@
-import Axios, { type AxiosResponse } from 'axios'
-import MockAdapter from 'axios-mock-adapter'
+import { type AxiosResponse } from 'axios'
 import {
-  beforeAll,
-  afterEach,
   describe,
   it,
   expect,
@@ -24,16 +21,6 @@ import {
   useApi,
   copyHook,
 } from '.'
-
-let mock: MockAdapter
-
-beforeAll(() => {
-  mock = new MockAdapter(Axios)
-})
-
-afterEach(() => {
-  mock.reset()
-})
 
 describe('useApi', () => {
   it('should return same instance and same instance (singleton)', () => {
@@ -60,8 +47,6 @@ describe('setApi', () => {
 
 describe('Hooks utils', () => {
   it('should be able to registering on-request hook using onRequest()', async () => {
-    mock.onGet('/api/user').reply(200, [])
-
     const api      = useApi()
     const fn       = jest.fn((config) => config)
     const config   = { headers: { foo: 'bar' } }
@@ -69,22 +54,20 @@ describe('Hooks utils', () => {
 
     onRequest(fn)
 
-    await api.get('/api/user', config)
+    await api.get('/api/ping', config)
 
     expect(fn).toBeCalled()
     expect(fn).toBeCalledWith(expected)
   })
 
   it('should be able to registering on-response hook using onResponse()', async () => {
-    mock.onGet('/api/user').reply(200, { foo: 'bar' })
-
     const api      = useApi()
     const fn       = jest.fn((response: AxiosResponse) => response)
-    const expected = expect.objectContaining({ data: { foo: 'bar' } })
+    const expected = expect.objectContaining({ data: { message: 'Pong' } })
 
     onResponse(fn)
 
-    await api.get('/api/user')
+    await api.get('/api/ping')
 
     expect(fn).toBeCalled()
     expect(fn).toBeCalledWith(expected)
@@ -100,66 +83,53 @@ describe('Hooks utils', () => {
     onRequest(jest.fn().mockRejectedValue('Hehe'))
 
     try {
-      await api.get('/api/user')
+      await api.get('/api/ping')
     } catch {
-      expect(fn).toBeCalled()
+      expect(fn).toBeCalledTimes(1)
       expect(fn).toBeCalledWith('Hehe')
     }
   })
 
   it('should be able to registering on-response-error hook using onResponseError()', async () => {
-    mock.onGet('/api/user').reply(422, {
-      code   : 422,
-      message: 'Validation Error',
-      details: [],
-    })
-
     const api = useApi()
     const fn  = jest.fn((error) => error)
 
     onResponseError(fn)
 
     try {
-      await api.get('/api/user')
+      await api.get('/api/error/422')
     } catch {
       expect(fn).toBeCalled()
     }
   })
 
   it('should be able to registering on-request-error and on-request-error hook using onError()', async () => {
-    mock.onGet('/api/user').reply(422, {
-      code   : 422,
-      message: 'Validation Error',
-      details: [],
-    })
-
     const api = useApi()
     const fn  = jest.fn(async (error) => await Promise.reject(error))
 
     onError(fn)
 
     // mock request error
-    const mockId = onRequest(jest.fn().mockRejectedValue('Hehe'))
+    const mockId = onRequest(jest.fn().mockRejectedValue('On Request Error'))
 
     try {
-      await api.get('/api/user')
+      await api.get('/api/ping')
     } catch {
       expect(fn).toBeCalledTimes(1)
-      expect(fn).toBeCalledWith('Hehe')
+      expect(fn).toHaveBeenNthCalledWith(1, 'On Request Error')
     }
 
     removeHook('onRequest', mockId)
 
     try {
-      await api.get('/api/user')
+      await api.get('/api/error/422')
     } catch {
       expect(fn).toBeCalledTimes(2)
+      expect(fn).toHaveBeenNthCalledWith(2, expect.objectContaining({ message: 'Request failed with status code 422' }))
     }
   })
 
   it('should be able to remove hook with removeHook()', async () => {
-    mock.onGet('/api/user').reply(200, [])
-
     const api = useApi()
     const fn  = jest.fn((response: AxiosResponse) => response)
     const id  = onResponse(fn)
@@ -172,8 +142,6 @@ describe('Hooks utils', () => {
   })
 
   it('should remove all hook with resetHook()', async () => {
-    mock.onGet('/api/user').reply(200, [])
-
     const api = useApi()
     const fn  = jest.fn(() => {})
 
@@ -184,7 +152,7 @@ describe('Hooks utils', () => {
 
     resetHook()
 
-    await api.get('/api/user')
+    await api.get('/api/ping')
 
     expect(fn).not.toBeCalled()
   })
@@ -192,21 +160,18 @@ describe('Hooks utils', () => {
 
 describe('copyHook', () => {
   it('should be copy hook to new instance', async () => {
-    mock.onGet('/v1/api/user').reply(200, { data: 'v1' })
-    mock.onGet('/v2/api/user').reply(200, { data: 'v2' })
-
-    const a        = createApi({ baseURL: '/v1', headers: { foo: 'bar' } })
-    const b        = createApi({ baseURL: '/v2', headers: { foo: 'bar' } })
+    const a        = createApi({ baseURL: `${process.env.BASE_URL as string}/v1`, headers: { foo: 'bar' } })
+    const b        = createApi({ baseURL: `${process.env.BASE_URL as string}/v2`, headers: { foo: 'bar' } })
     const fn       = jest.fn((config) => config)
     const expected = expect.objectContaining({
-      baseURL: '/v2',
+      baseURL: `${process.env.BASE_URL as string}/v2`,
       headers: expect.objectContaining({ foo: 'bar' }),
     })
 
     onRequest(fn, a)
     copyHook(a, b)
 
-    await b.get('/api/user')
+    await b.get('/api/ping')
 
     expect(fn).toBeCalled()
     expect(fn).toBeCalledWith(expected)
@@ -215,45 +180,37 @@ describe('copyHook', () => {
 
 describe('Inherit instance', () => {
   it('should be able to create new instance with same config', async () => {
-    mock.onGet('/v1/api/user').reply(200, { data: 'v1' })
-    mock.onGet('/v2/api/user').reply(200, { data: 'v2' })
-
-    const a = createApi({ baseURL: '/v1', headers: { foo: 'bar' } })
-    const b = a.create({ baseURL: '/v2' })
+    const a = createApi({ baseURL: `${process.env.BASE_URL as string}/v1`, headers: { foo: 'bar' } })
+    const b = a.create({ baseURL: `${process.env.BASE_URL as string}/v2` })
 
     expect(b).not.toStrictEqual(a)
 
-    const response = await b.get('/api/user')
+    const response = await b.get('/api/ping')
 
     expect(response.config.headers?.foo).toBe('bar')
-    expect(response.data.data).toBe('v2')
+    expect(response.data.data).toStrictEqual({ version: 'v2' })
   })
 
   it('should be copy hook to new instance', async () => {
-    mock.onGet('/v1/api/user').reply(200, { data: 'v1' })
-    mock.onGet('/v2/api/user').reply(200, { data: 'v2' })
-
-    const a  = createApi({ baseURL: '/v1', headers: { foo: 'bar' } })
+    const a  = createApi({ baseURL: `${process.env.BASE_URL as string}/v1`, headers: { foo: 'bar' } })
     const fn = jest.fn((config) => config)
 
     onRequest(fn, a)
 
-    const b        = a.create({ baseURL: '/v2' })
+    const b        = a.create({ baseURL: `${process.env.BASE_URL as string}/v2` })
     const expected = expect.objectContaining({
-      baseURL: '/v2',
+      baseURL: `${process.env.BASE_URL as string}/v2`,
       headers: expect.objectContaining({ foo: 'bar' }),
     })
 
-    await b.get('/api/user')
+    await b.get('/api/ping')
 
     expect(fn).toBeCalled()
     expect(fn).toBeCalledWith(expected)
   })
 
   it('should prefixing baseUrl if prefixURL is present', async () => {
-    mock.onGet('/v1/api/user').reply(200, { data: 'data-user' })
-
-    const a        = createApi({ baseURL: '/v1', headers: { foo: 'bar' } })
+    const a        = createApi({ baseURL: process.env.BASE_URL, headers: { foo: 'bar' } })
     const b        = a.create({ prefixURL: 'api' })
     const response = await b.get('user')
 
@@ -274,28 +231,24 @@ describe('lazyton', () => {
   })
 
   it('should inherit hook from global', async () => {
-    mock.onGet('/api/user').reply(200, [])
-
-    const useLazy = createLazyton({ baseURL: '/v1' })
+    const useLazy = createLazyton({ prefixURL: '/api' })
     const fn      = jest.fn((config) => config)
 
     onRequest(fn)
 
-    await useLazy().get('/api/user')
+    await useLazy().get('/ping')
 
     expect(fn).toBeCalled()
   })
 
   it('should create fresh instace if parameter fresh set to true', async () => {
-    mock.onGet('/api/user').reply(200, [])
-
-    const useLazy = createLazyton({ baseURL: '/v1' }, true)
+    const useLazy = createLazyton({ baseURL: `${process.env.BASE_URL as string}/api` }, true)
     const fn      = jest.fn((config) => config)
     const a       = useLazy()
 
     onRequest(fn)
 
-    await a.get('/api/user')
+    await a.get('/ping')
 
     expect(fn).not.toBeCalled()
   })

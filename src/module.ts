@@ -15,12 +15,14 @@ export default defineNuxtModule({
     const { resolve } = createResolver(import.meta.url)
 
     addPlugin({
+      name : 'nuapi-plugin',
       mode : 'server',
       src  : resolve('runtime/api.server'),
       order: -20,
     })
 
     addPlugin({
+      name : 'nuapi-plugin',
       mode : 'client',
       src  : resolve('runtime/api.client'),
       order: -20,
