@@ -49,3 +49,14 @@ export function getMessage (error: unknown): string {
     ? error.message
     : 'Unknown Error'
 }
+
+/**
+ * Get error response header
+ * @param error
+ * @param name
+ * @returns
+ */
+export function getHeader (error: unknown, name: string): string | undefined | null {
+  if (isAxiosError(error))
+    return error.response?.headers[name]
+}

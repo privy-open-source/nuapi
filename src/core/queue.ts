@@ -17,6 +17,21 @@ export interface QueueOptions {
   worker: number,
 }
 
+export enum QueuePriority {
+  /**
+   * Higher priority
+   */
+  HIGH = 30,
+  /**
+   * Default priority
+   */
+  MEDIUM = 20,
+  /**
+   * Low priority
+   */
+  LOW = 10,
+}
+
 export default class QueueAdapter {
   protected fetch: AxiosAdapter
   protected queue: QueueJob[]
@@ -82,7 +97,7 @@ export default class QueueAdapter {
         const queue: QueueJob = {
           resolve : onResolved,
           reject  : onRejected,
-          priority: config.priority ?? 1,
+          priority: config.priority ?? QueuePriority.MEDIUM,
           config,
         }
 

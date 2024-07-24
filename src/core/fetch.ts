@@ -8,8 +8,9 @@ import {
   cleanDoubleSlashes,
 } from 'ufo'
 import {
-  ofetch,
+  createFetch,
   FetchError,
+  type $Fetch,
   type FetchResponse,
 } from 'ofetch'
 import { AxiosError } from 'axios'
@@ -17,10 +18,12 @@ import { AxiosError } from 'axios'
 type ResponseType = 'blob' | 'text' | 'arrayBuffer' | 'stream'
 
 export default class FetchAdapter {
-  private readonly fetch: AxiosAdapter
+  protected readonly ofetch: $Fetch
+  protected readonly fetch: AxiosAdapter
 
   constructor (adapter: AxiosAdapter) {
-    this.fetch = adapter
+    this.fetch  = adapter
+    this.ofetch = (globalThis.$fetch as $Fetch) ?? createFetch({ fetch: globalThis.fetch })
   }
 
   getBaseURL (config: InternalAxiosRequestConfig) {
@@ -80,7 +83,7 @@ export default class FetchAdapter {
       if (config.data instanceof FormData)
         reqHeaders.delete('Content-Type')
 
-      const response = await ofetch.raw(config.url ?? '/', {
+      const response = await this.ofetch.raw(config.url ?? '/', {
         baseURL     : this.getBaseURL(config),
         headers     : reqHeaders,
         body        : config.data,

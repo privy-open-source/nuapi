@@ -1,28 +1,43 @@
-import Axios from 'axios'
-import MockAdapter from 'axios-mock-adapter'
-import { useApi } from '.'
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
+import {
+  useApi,
+  createApi,
+  setApi,
+} from '.'
 import {
   beforeAll,
   afterEach,
   describe,
   it,
   expect,
+  afterAll,
 } from 'vitest'
 
-let mock: MockAdapter
+const BASE_URL = 'http://localhost:3000'
+
+const server = setupServer(
+  http.get(`${BASE_URL}/api/ping`, () => {
+    return HttpResponse.json({ message: 'Pong' })
+  }),
+)
 
 beforeAll(() => {
-  mock = new MockAdapter(Axios)
+  server.listen()
+
+  setApi(createApi({ baseURL: BASE_URL }))
 })
 
 afterEach(() => {
-  mock.reset()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
 })
 
 describe('DedupeAdapter', () => {
   it('should cancel previous request with same requestId', async () => {
-    mock.onGet('/api/ping').reply(200, { message: 'Pong' })
-
     const api    = useApi()
     const a      = api.get('/api/ping', { requestId: 'ping' })
     const b      = api.get('/api/ping', { requestId: 'ping' })
@@ -33,8 +48,6 @@ describe('DedupeAdapter', () => {
   })
 
   it('should do nothing if requestId is different', async () => {
-    mock.onGet('/api/ping').reply(200, { message: 'Pong' })
-
     const api    = useApi()
     const a      = api.get('/api/ping', { requestId: 'ping/a' })
     const b      = api.get('/api/ping', { requestId: 'ping/b' })
@@ -45,8 +58,6 @@ describe('DedupeAdapter', () => {
   })
 
   it('should be able to cancel via AbortController', async () => {
-    mock.onGet('/api/ping').reply(200, { message: 'Pong' })
-
     const api        = useApi()
     const controller = new AbortController()
     const signal     = controller.signal
@@ -65,8 +76,6 @@ describe('DedupeAdapter', () => {
 
 describe('cancel', () => {
   it('should be cancel request only specific requestId', async () => {
-    mock.onGet('/api/ping').reply(200, { message: 'Pong' })
-
     const api = useApi()
     const a   = api.get('/api/ping', { requestId: 'ping/i' })
     const b   = api.get('/api/ping', { requestId: 'ping/j' })
@@ -82,8 +91,6 @@ describe('cancel', () => {
 
 describe('cancelAll', () => {
   it('should be cancel all active request', async () => {
-    mock.onGet('/api/ping').reply(200, { message: 'Pong' })
-
     const api = useApi()
     const a   = api.get('/api/ping', { requestId: 'ping/x' })
     const b   = api.get('/api/ping', { requestId: 'ping/y' })

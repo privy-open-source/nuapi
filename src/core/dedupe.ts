@@ -9,8 +9,8 @@ export default class DedupeAdapter {
     this.limit = new Map()
   }
 
-  public cancel (requestId: string) {
-    const controller = this.limit.get(requestId)
+  public cancel (requestKey: string) {
+    const controller = this.limit.get(requestKey)
 
     if (controller)
       controller.abort()
@@ -24,12 +24,12 @@ export default class DedupeAdapter {
   public adapter (): AxiosAdapter {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     return (config) => {
-      const requestId = config.requestId
+      const requestKey = config.requestKey ?? config.requestId
 
-      if (!requestId)
+      if (!requestKey)
         return this.fetch(config)
 
-      this.cancel(requestId)
+      this.cancel(requestKey)
 
       const controller = new AbortController()
       const signal     = controller.signal
@@ -37,7 +37,7 @@ export default class DedupeAdapter {
         controller.abort()
       }
 
-      this.limit.set(requestId, controller)
+      this.limit.set(requestKey, controller)
 
       if (config.signal)
         config.signal.addEventListener?.('abort', onAborted)
@@ -47,8 +47,8 @@ export default class DedupeAdapter {
           .then(resolve)
           .catch(reject)
           .finally(() => {
-            if (this.limit.get(requestId) === controller)
-              this.limit.delete(requestId)
+            if (this.limit.get(requestKey) === controller)
+              this.limit.delete(requestKey)
 
             if (config.signal)
               config.signal.removeEventListener?.('abort', onAborted)

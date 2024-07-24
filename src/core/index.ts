@@ -9,12 +9,51 @@ import defu from 'defu'
 import DedupeAdapter from './dedupe'
 import QueueAdapter, { type QueueOptions } from './queue'
 import FetchAdapter from './fetch'
+import RetryAdapter from './retry'
+import type { RetryOnHandler } from './retry'
 
 declare module 'axios' {
   export interface AxiosRequestConfig {
+    /**
+     * Queue priority
+     */
     priority?: number,
+    /**
+     * @deprecated rename to `requestKey` because it's confusing with `X-Request-ID`
+     */
     requestId?: string,
+    /**
+     * Request Identifier, prior request with same key will canceled
+     */
+    requestKey?: string,
+    /**
+     * Prefix URL
+     */
     prefixURL?: string,
+    /**
+     * Maximal retries
+     * @default 2 // (except for 'POST', 'PATCH', 'PUT', 'DELETE')
+     */
+    retry?: number | boolean,
+    /**
+     * Retry on status code
+     * @default
+     * [
+        408, // Request Timeout
+        409, // Conflict
+        425, // Too Early
+        429, // Too Many Requests
+        500, // Internal Server Error
+        502, // Bad Gateway
+        503, // Service Unavailable
+        504, // Gateway Timeout
+      ]
+    */
+    retryStatus?: number[],
+    /**
+     * Custom condition method
+     */
+    retryOn?: RetryOnHandler,
   }
 }
 
@@ -61,6 +100,12 @@ export interface LazyInstance {
   setApi: (instance: ApiInstance) => void,
 }
 
+function resolveOptions (options: ApiConfig | (() => ApiConfig)) {
+  return typeof options === 'function'
+    ? options()
+    : options
+}
+
 /**
  * Create new lazy-singleton instance
  * @param options Axios create options
@@ -70,14 +115,14 @@ export interface LazyInstance {
  *
  *  useApi().get('/url/endpoint/')
  */
-export function createLazyton (options: ApiConfig = {}, fresh = false): LazyInstance {
+export function createLazyton (options: ApiConfig | (() => ApiConfig) = {}, fresh = false): LazyInstance {
   let api: ApiInstance
 
   const getApi = function () {
     if (!api) {
       api = fresh
-        ? createApi(options)
-        : useApi().create(options)
+        ? createApi(resolveOptions(options))
+        : useApi().create(resolveOptions(options))
     }
 
     return api
@@ -110,11 +155,16 @@ export const setApi = useApi.setApi
  * @param options
  */
 export function createApi (options: ApiConfig = {}): ApiInstance {
+  /**
+   * Adapter Pipeline:
+   * Retry => Dedupe => Queue => Fetch
+   */
   const originalAdapter = Axios.getAdapter(options.adapter ?? Axios.defaults.adapter)
   const fetch           = new FetchAdapter(originalAdapter)
   const queue           = new QueueAdapter(fetch.adapter(), options.queue)
   const dedupe          = new DedupeAdapter(queue.adapter())
-  const adapter         = dedupe.adapter()
+  const retry           = new RetryAdapter(dedupe.adapter())
+  const adapter         = retry.adapter()
   const instance        = Axios.create({ ...options, adapter })
 
   const hooks: HooksMap = {
@@ -190,7 +240,6 @@ export function onRequestError (fn: ErrorHook, instance = useApi()) {
 /**
  * Add global on-response-error handler.
  * @param fn
- * @param instance
  */
 export function onResponseError (fn: ErrorHook): number
 /**
@@ -201,24 +250,6 @@ export function onResponseError (fn: ErrorHook): number
 export function onResponseError (fn: ErrorHook, instance: ApiInstance): number
 export function onResponseError (fn: ErrorHook, instance = useApi()) {
   return addHook('onResponseError', fn, instance)
-}
-
-/**
- * Add global onError handler, onError is equal to onRequestError + onResponseError
- * @param fn handler
- */
-export function onError (fn: ErrorHook): [number, number]
-/**
- * Add onError handler to instance, onError is equal to onRequestError + onResponseError
- * @param fn handler
- * @param instance target instance
- */
-export function onError (fn: ErrorHook, instance: ApiInstance): [number, number]
-export function onError (fn: ErrorHook, instance = useApi()) {
-  const a = onRequestError(fn, instance)
-  const b = onResponseError(fn, instance)
-
-  return [a, b]
 }
 
 /**
@@ -275,6 +306,7 @@ export function removeHook<K extends keyof HooksMap> (name: K, id: number): void
  * Remove hook from instance
  * @param name hook name
  * @param id hook id
+ * @param instance target instance
  */
 export function removeHook<K extends keyof HooksMap> (name: K, id: number, instance: ApiInstance): void
 export function removeHook<K extends keyof HooksMap> (name: K, id: number, instance = useApi()): void {
@@ -289,7 +321,6 @@ export function removeHook<K extends keyof HooksMap> (name: K, id: number, insta
 
 /**
  * Reset all global hooks
- * @param instance
  */
 export function resetHook (): void
 /**
@@ -327,3 +358,11 @@ export * from './error'
 export {
   type AxiosRequestConfig,
 } from 'axios'
+
+export {
+  QueuePriority,
+} from './queue'
+
+export {
+  onResponseError as onError,
+}
