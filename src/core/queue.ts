@@ -27,7 +27,7 @@ export enum QueuePriority {
    */
   MEDIUM = 20,
   /**
-   * Low priority
+   * Lower priority
    */
   LOW = 10,
 }
@@ -102,7 +102,11 @@ export default class QueueAdapter {
         }
 
         this.enqueue(queue)
-        this.run()
+
+        // Next tick
+        setTimeout(() => {
+          this.run()
+        }, 0)
       }
     })
   }

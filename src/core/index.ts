@@ -54,6 +54,11 @@ declare module 'axios' {
      * Custom condition method
      */
     retryOn?: RetryOnHandler,
+    /**
+     * Retry delay
+     * @default 1000
+     */
+    retryDelay?: number,
   }
 }
 

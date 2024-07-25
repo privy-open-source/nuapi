@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/promise-function-async, @typescript-eslint/no-throw-literal */
 import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios'
-import {
-  getCode,
-  getHeader,
-  isAxiosError,
-  isCancel,
-} from './error'
+import { getCode, isCancel } from './error'
 
 export type RetryOnHandler = (error: unknown) => boolean | Promise<boolean>
 
@@ -46,33 +41,18 @@ export default class RetryAdapter {
     if (typeof config.retry === 'number' && Number.isFinite(config.retry))
       return config.retry
 
-    if (!PAYLOAD_METHODS.has(String(config.method).toUpperCase()))
-      return 2
+    if (PAYLOAD_METHODS.has(String(config.method).toUpperCase()) && config.retry !== true)
+      return 0
 
-    return 0
+    return 2
   }
 
   protected getRetryCount (config: InternalAxiosRequestConfig): number {
     return config.retryCount ?? 0
   }
 
-  protected getRetryDelay (config: InternalAxiosRequestConfig, error: unknown) {
-    if (isAxiosError(error)) {
-      const retryAfter = getHeader(error, 'Retry-After') ?? getHeader(error, 'retry-after')
-
-      if (retryAfter) {
-        if (/^\d+$/.test(retryAfter))
-          return 1000 * Number.parseInt(retryAfter)
-
-        const exp  = Date.parse(retryAfter)
-        const diff = exp - Date.now()
-
-        if (diff > 0)
-          return diff
-      }
-    }
-
-    return 1000 * (this.getRetryCount(config) + 1)
+  protected getRetryDelay (config: InternalAxiosRequestConfig) {
+    return (config.retryDelay ?? 1000) * (this.getRetryCount(config) + 1)
   }
 
   protected async isNeedRetry (config: InternalAxiosRequestConfig, error: unknown) {
@@ -102,7 +82,7 @@ export default class RetryAdapter {
       if (!(await this.isNeedRetry(config, error)))
         throw error
 
-      await delay(this.getRetryDelay(config, error))
+      await delay(this.getRetryDelay(config))
 
       return this.sendWithRetry({
         ...config,
