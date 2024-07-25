@@ -1,6 +1,6 @@
 {
   "name": "@privyid/nuapi",
-  "version": "0.3.0-alpha.4",
+  "version": "0.3.0-alpha.5",
   "description": "Nuxt HTTP Client module",
   "packageManager": "yarn@4.3.1",
   "repository": {
