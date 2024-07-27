@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/promise-function-async */
 import Axios, {
   type AxiosAdapter,
   type AxiosPromise,
@@ -68,7 +69,6 @@ export default class QueueAdapter {
     return this.queue.pop()
   }
 
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
   protected add (config: InternalAxiosRequestConfig): AxiosPromise {
     return new Promise((resolve, reject) => {
       const onResolved: QueueJob['resolve'] = (response) => {
@@ -104,9 +104,9 @@ export default class QueueAdapter {
         this.enqueue(queue)
 
         // Next tick
-        setTimeout(() => {
+        queueMicrotask(() => {
           this.run()
-        }, 0)
+        })
       }
     })
   }
@@ -138,7 +138,6 @@ export default class QueueAdapter {
   }
 
   public adapter (): AxiosAdapter {
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
     return (config) => {
       return this.add(config)
     }

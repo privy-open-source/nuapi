@@ -2977,6 +2977,8 @@ __metadata:
     typescript: "npm:5.5.4"
     ufo: "npm:^1.5.4"
     vitest: "npm:0.30.1"
+  peerDependencies:
+    nuxt: ">=3.4.0"
   languageName: unknown
   linkType: soft
 
