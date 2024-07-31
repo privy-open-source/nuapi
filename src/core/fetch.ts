@@ -26,7 +26,7 @@ export default class FetchAdapter {
     this.ofetch = (globalThis.$fetch as $Fetch) ?? createFetch({ fetch: globalThis.fetch })
   }
 
-  getBaseURL (config: InternalAxiosRequestConfig) {
+  protected getBaseURL (config: InternalAxiosRequestConfig) {
     let result: string = '/'
 
     if (config.baseURL && config.prefixURL)
@@ -41,14 +41,14 @@ export default class FetchAdapter {
     return cleanDoubleSlashes(result)
   }
 
-  getResponseType (config: InternalAxiosRequestConfig): ResponseType | undefined {
+  protected getResponseType (config: InternalAxiosRequestConfig): ResponseType | undefined {
     if (config.responseType === 'arraybuffer')
       return 'arrayBuffer'
 
     return config.responseType as ResponseType
   }
 
-  getErrorCodeFromStatus (status: number = 500): string {
+  protected getErrorCodeFromStatus (status: number = 500): string {
     if (status >= 400 && status < 500)
       return 'ERR_BAD_REQUEST'
 
@@ -58,7 +58,7 @@ export default class FetchAdapter {
     return 'ERR_BAD_OPTION'
   }
 
-  createAxiosResponse (config: InternalAxiosRequestConfig, response: FetchResponse<unknown>): AxiosResponse {
+  protected createAxiosResponse (config: InternalAxiosRequestConfig, response: FetchResponse<unknown>): AxiosResponse {
     return {
       config,
       data      : response._data,
@@ -68,14 +68,14 @@ export default class FetchAdapter {
     }
   }
 
-  async sendWithAxios (config: InternalAxiosRequestConfig) {
+  protected async sendWithAxios (config: InternalAxiosRequestConfig) {
     return await this.fetch({
       ...config,
       baseURL: this.getBaseURL(config),
     })
   }
 
-  async sendWithFetch (config: InternalAxiosRequestConfig) {
+  protected async sendWithFetch (config: InternalAxiosRequestConfig) {
     try {
       const reqHeaders = new Headers(config.headers ?? {})
 
@@ -111,13 +111,13 @@ export default class FetchAdapter {
     }
   }
 
-  isFetchSupported (config: InternalAxiosRequestConfig) {
+  protected isFetchSupported (config: InternalAxiosRequestConfig) {
     return typeof config.onUploadProgress !== 'function'
       && typeof config.onDownloadProgress !== 'function'
       && config.responseType !== 'document'
   }
 
-  adapter (): AxiosAdapter {
+  public adapter (): AxiosAdapter {
     return async (config) => {
       return this.isFetchSupported(config)
         ? await this.sendWithFetch(config)

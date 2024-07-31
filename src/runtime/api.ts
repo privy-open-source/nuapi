@@ -30,11 +30,8 @@ export default defineNuxtPlugin({
     let instance = event?.$api
 
     if (!instance) {
-      const origin  = url.origin
-      const baseURL = joinURL(origin, config.app.baseURL)
-
       instance = createApi({
-        baseURL,
+        baseURL: joinURL(url.origin, config.app.baseURL),
         headers,
       })
 

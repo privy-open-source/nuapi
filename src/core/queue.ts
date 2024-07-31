@@ -15,6 +15,10 @@ interface QueueJob {
 }
 
 export interface QueueOptions {
+  /**
+   * Queue worker number
+   * @default 5
+   */
   worker: number,
 }
 

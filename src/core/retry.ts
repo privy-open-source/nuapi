@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/promise-function-async, @typescript-eslint/no-throw-literal */
 import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios'
 import { getCode, isCancel } from './error'
+import { defuFn } from 'defu'
 
 export type RetryOnHandler = (error: unknown) => boolean | Promise<boolean>
 
 declare module 'axios' {
   interface InternalAxiosRequestConfig {
-    retryCount?: number,
+    retryCount: number,
+    retryStatus: number[],
+    retryDelay: number,
   }
 }
 
@@ -47,14 +50,6 @@ export default class RetryAdapter {
     return 2
   }
 
-  protected getRetryCount (config: InternalAxiosRequestConfig): number {
-    return config.retryCount ?? 0
-  }
-
-  protected getRetryDelay (config: InternalAxiosRequestConfig) {
-    return (config.retryDelay ?? 1000) * (this.getRetryCount(config) + 1)
-  }
-
   protected async isNeedRetry (config: InternalAxiosRequestConfig, error: unknown) {
     if (config.retry === false)
       return false
@@ -65,12 +60,8 @@ export default class RetryAdapter {
     if (typeof config.retryOn === 'function' && await config.retryOn(error))
       return true
 
-    if (this.getRetryCount(config) < this.getRetryMax(config)) {
-      const code        = getCode(error)
-      const statusCodes = config.retryStatus ?? RETRY_STATUS_CODES
-
-      return statusCodes.includes(code)
-    }
+    if (config.retryCount < this.getRetryMax(config))
+      return config.retryStatus.includes(getCode(error))
 
     return false
   }
@@ -79,14 +70,20 @@ export default class RetryAdapter {
     try {
       return await this.fetch(config)
     } catch (error) {
-      if (!(await this.isNeedRetry(config, error)))
+      const cfg = defuFn(config, {
+        retryCount : 0,
+        retryStatus: RETRY_STATUS_CODES,
+        retryDelay : 1000,
+      })
+
+      if (!(await this.isNeedRetry(cfg, error)))
         throw error
 
-      await delay(this.getRetryDelay(config))
+      await delay((cfg.retryCount + 1) * cfg.retryDelay)
 
       return this.sendWithRetry({
         ...config,
-        retryCount: this.getRetryCount(config) + 1,
+        retryCount: (cfg.retryCount + 1),
       })
     }
   }
