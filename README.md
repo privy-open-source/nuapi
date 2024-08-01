@@ -24,7 +24,7 @@ Find and replace all on all files (CMD+SHIFT+F):
 
 <!-- Highlight some of the features your module provide here -->
 - ✅ Using Fetch instead of XHR
-- ✅ Built-in adapter for Dedupe, and Priority Queue request.
+- ✅ Built-in adapter for Retry, Dedupe, and Priority Queue request.
 - ✅ Composable hook for Axios interceptors.
 
 ## Compabilities
@@ -133,12 +133,17 @@ onResponseError(async (error) => {
 
 ## Queue
 
-All request per instance will be add into queue before sent with priority `1`.
+All request per instance will be add into queue before sent with priority MEDIUM (`20`).
 If you want to send your request first before the others, you can set using option `priority`. The higher priority will run first.
 
 ```ts
+import { QueuePriority } from '@privyid/nuapi/core'
+
 useApi().get('/document/load', {
-  priority: 2,
+  // Using presets
+  priority: QueuePriority.HIGH,
+  // Or using number
+  priority: 50,
 })
 ```
 
@@ -146,13 +151,62 @@ useApi().get('/document/load', {
 
 Sometime, you want to cancel request with same endpoint like when you working with searching or filter.
 
-NuAPI has built in function for this case. Just set `requestId`, multiple sent request with same id will cancel last request before.
+NuAPI has built in function for this case. Just set `requestkey`, multiple sent request with same id will cancel last request before.
 
 ```ts
 useApi().get('/document/load', {
-  requestId: 'document-load',
+  requestkey: 'document-load',
 })
 ```
+
+### Cancel Manually
+
+Cancel spesific request by `requestKey` using `.cancel()`
+
+```ts
+useApi().cancel('document-load')
+```
+
+Or cancel all requests that have `requestKey` using `.cancelAll()`
+
+```ts
+useApi().cancelAll()
+```
+
+## Retry
+
+NuAPI automatically retries request when got an error with status code:
+
+- 408 - Request Timeout
+- 409 - Conflict
+- 425 - Too Early
+- 429 - Too Many Requests
+- 500 - Internal Server Error
+- 502 - Bad Gateway
+- 503 - Service Unavailable
+- 504 - Gateway Timeout
+
+By default will retries `3` times (except for `PATCH`, `POST`, `PUT`, `DELETE`) can be changed using option `retry`.
+
+```ts
+useApi().get('/document/load', {
+  retry: 5,
+})
+```
+
+### Customize Retry Condition
+
+You can customize when request should retries using `retryOn`
+
+```ts
+useApi().get('/document/load', {
+  retryOn (error) {
+    return getCode(error) === 423
+      && error.config.retryCount < 3
+  },
+})
+```
+
 ## API
 
 👉 You can learn more about usage in [JSDocs Documentation](https://www.jsdocs.io/package/@privyid/nuapi).

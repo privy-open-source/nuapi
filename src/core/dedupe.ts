@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/promise-function-async */
 import type { AxiosAdapter } from 'axios'
 
 export default class DedupeAdapter {
@@ -22,7 +23,6 @@ export default class DedupeAdapter {
   }
 
   public adapter (): AxiosAdapter {
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
     return (config) => {
       const requestKey = config.requestKey ?? config.requestId
 

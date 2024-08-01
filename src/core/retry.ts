@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/promise-function-async, @typescript-eslint/no-throw-literal */
 import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios'
-import {
-  getCode,
-  getHeader,
-  isAxiosError,
-  isCancel,
-} from './error'
+import { getCode, isCancel } from './error'
+import { defuFn } from 'defu'
 
 export type RetryOnHandler = (error: unknown) => boolean | Promise<boolean>
 
 declare module 'axios' {
   interface InternalAxiosRequestConfig {
-    retryCount?: number,
+    retryCount: number,
+    retryStatus: number[],
+    retryDelay: number,
   }
 }
 
@@ -46,33 +44,10 @@ export default class RetryAdapter {
     if (typeof config.retry === 'number' && Number.isFinite(config.retry))
       return config.retry
 
-    if (!PAYLOAD_METHODS.has(String(config.method).toUpperCase()))
-      return 2
+    if (PAYLOAD_METHODS.has(String(config.method).toUpperCase()) && config.retry !== true)
+      return 0
 
-    return 0
-  }
-
-  protected getRetryCount (config: InternalAxiosRequestConfig): number {
-    return config.retryCount ?? 0
-  }
-
-  protected getRetryDelay (config: InternalAxiosRequestConfig, error: unknown) {
-    if (isAxiosError(error)) {
-      const retryAfter = getHeader(error, 'Retry-After') ?? getHeader(error, 'retry-after')
-
-      if (retryAfter) {
-        if (/^\d+$/.test(retryAfter))
-          return 1000 * Number.parseInt(retryAfter)
-
-        const exp  = Date.parse(retryAfter)
-        const diff = exp - Date.now()
-
-        if (diff > 0)
-          return diff
-      }
-    }
-
-    return 1000 * (this.getRetryCount(config) + 1)
+    return 2
   }
 
   protected async isNeedRetry (config: InternalAxiosRequestConfig, error: unknown) {
@@ -85,12 +60,8 @@ export default class RetryAdapter {
     if (typeof config.retryOn === 'function' && await config.retryOn(error))
       return true
 
-    if (this.getRetryCount(config) < this.getRetryMax(config)) {
-      const code        = getCode(error)
-      const statusCodes = config.retryStatus ?? RETRY_STATUS_CODES
-
-      return statusCodes.includes(code)
-    }
+    if (config.retryCount < this.getRetryMax(config))
+      return config.retryStatus.includes(getCode(error))
 
     return false
   }
@@ -99,14 +70,20 @@ export default class RetryAdapter {
     try {
       return await this.fetch(config)
     } catch (error) {
-      if (!(await this.isNeedRetry(config, error)))
+      const cfg = defuFn(config, {
+        retryCount : 0,
+        retryStatus: RETRY_STATUS_CODES,
+        retryDelay : 1000,
+      })
+
+      if (!(await this.isNeedRetry(cfg, error)))
         throw error
 
-      await delay(this.getRetryDelay(config, error))
+      await delay((cfg.retryCount + 1) * cfg.retryDelay)
 
       return this.sendWithRetry({
         ...config,
-        retryCount: this.getRetryCount(config) + 1,
+        retryCount: (cfg.retryCount + 1),
       })
     }
   }
