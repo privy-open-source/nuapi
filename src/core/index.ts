@@ -108,10 +108,10 @@ export interface LazyInstance {
   setApi: (instance: ApiInstance) => void,
 }
 
-function resolveOptions (options: ApiConfig | (() => ApiConfig)) {
-  return typeof options === 'function'
-    ? options()
-    : options
+function toValue<T extends object = any> (value: T | (() => T)) {
+  return typeof value === 'function'
+    ? value()
+    : value
 }
 
 /**
@@ -129,8 +129,8 @@ export function createLazyton (options: ApiConfig | (() => ApiConfig) = {}, fres
   const getApi = function () {
     if (!api) {
       api = fresh
-        ? createApi(resolveOptions(options))
-        : useApi().create(resolveOptions(options))
+        ? createApi(toValue(options))
+        : useApi().create(toValue(options))
     }
 
     return api
