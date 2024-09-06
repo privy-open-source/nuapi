@@ -20,6 +20,7 @@ import {
   setApi,
   useApi,
   copyHook,
+  QueuePriority,
 } from '.'
 
 describe('useApi', () => {
@@ -187,6 +188,7 @@ describe('Inherit instance', () => {
 
     const response = await b.get('/api/ping')
 
+    expect(b.parent).toBe(a)
     expect(response.config.headers?.foo).toBe('bar')
     expect(response.data.data).toStrictEqual({ version: 'v2' })
   })
@@ -216,6 +218,30 @@ describe('Inherit instance', () => {
 
     expect(response.status).toBe(200)
     expect(response.data.data).toBe('data-user')
+  })
+
+  it('should share queue in same parent instance', async () => {
+    const a = createApi({ baseURL: process.env.BASE_URL, queue: { worker: 1 } })
+    const b = a.create({ prefixURL: 'v1/api' })
+    const c = a.create({ prefixURL: 'v2/api' })
+
+    const result: number[] = []
+
+    await Promise.all([
+      a.get('api/ping').then(() => { result.push(99) }),
+      b.get('ping').then(() => { result.push(1) }),
+      b.get('ping', { priority: QueuePriority.LOW }).then(() => { result.push(2) }),
+      c.get('ping').then(() => { result.push(3) }),
+      c.get('ping', { priority: QueuePriority.HIGH }).then(() => { result.push(4) }),
+    ])
+
+    expect(result).toStrictEqual([
+      4,
+      99,
+      1,
+      3,
+      2,
+    ])
   })
 })
 

@@ -19,6 +19,13 @@ const server = setupServer(
     await delay(2)
   }),
 
+  http.all(`${BASE_URL}/api/echo`, async ({ request }) => {
+    return HttpResponse.json({
+      method : request.method,
+      headers: request.headers,
+    })
+  }),
+
   http.get(`${BASE_URL}/api/ping`, () => {
     return HttpResponse.json({ message: 'Pong' })
   }),
@@ -55,8 +62,20 @@ const server = setupServer(
     }, { status: 422 })
   }),
 
-  http.get(`${BASE_URL}/api/error/500`, () => {
-    return new HttpResponse(undefined, { status: 500 })
+  http.all(`${BASE_URL}/api/error/500`, () => {
+    return HttpResponse.json({}, { status: 500 })
+  }),
+
+  http.get(`${BASE_URL}/api/error/unstable`, async function * () {
+    let count = 0
+
+    while (count < 2) {
+      yield HttpResponse.json({ data: { count } }, { status: 500 })
+
+      count++
+    }
+
+    return HttpResponse.json({ message: 'Pong', data: { count } })
   }),
 )
 

@@ -1,56 +1,25 @@
-import { http, HttpResponse } from 'msw'
-import { setupServer } from 'msw/node'
+import { useApi } from '.'
 import {
-  useApi,
-  createApi,
-  setApi,
-} from '.'
-import {
-  beforeAll,
-  afterEach,
   describe,
   it,
   expect,
-  afterAll,
 } from 'vitest'
 
-const BASE_URL = 'http://localhost:3000'
-
-const server = setupServer(
-  http.get(`${BASE_URL}/api/ping`, () => {
-    return HttpResponse.json({ message: 'Pong' })
-  }),
-)
-
-beforeAll(() => {
-  server.listen()
-
-  setApi(createApi({ baseURL: BASE_URL }))
-})
-
-afterEach(() => {
-  server.resetHandlers()
-})
-
-afterAll(() => {
-  server.close()
-})
-
 describe('DedupeAdapter', () => {
-  it('should cancel previous request with same requestId', async () => {
+  it('should cancel previous request with same requestKey', async () => {
     const api    = useApi()
-    const a      = api.get('/api/ping', { requestId: 'ping' })
-    const b      = api.get('/api/ping', { requestId: 'ping' })
+    const a      = api.get('/api/ping', { requestKey: 'ping' })
+    const b      = api.get('/api/ping', { requestKey: 'ping' })
     const result = await Promise.allSettled([a, b])
 
     expect(result[0].status).toBe('rejected')
     expect(result[1].status).toBe('fulfilled')
   })
 
-  it('should do nothing if requestId is different', async () => {
+  it('should do nothing if requestKey is different', async () => {
     const api    = useApi()
-    const a      = api.get('/api/ping', { requestId: 'ping/a' })
-    const b      = api.get('/api/ping', { requestId: 'ping/b' })
+    const a      = api.get('/api/ping', { requestKey: 'ping/a' })
+    const b      = api.get('/api/ping', { requestKey: 'ping/b' })
     const result = await Promise.allSettled([a, b])
 
     expect(result[0].status).toBe('fulfilled')
@@ -62,8 +31,8 @@ describe('DedupeAdapter', () => {
     const controller = new AbortController()
     const signal     = controller.signal
 
-    const a = api.get('/api/ping', { requestId: 'ping/d', signal })
-    const b = api.get('/api/ping', { requestId: 'ping/e' })
+    const a = api.get('/api/ping', { requestKey: 'ping/d', signal })
+    const b = api.get('/api/ping', { requestKey: 'ping/e' })
 
     controller.abort()
 
@@ -75,10 +44,10 @@ describe('DedupeAdapter', () => {
 })
 
 describe('cancel', () => {
-  it('should be cancel request only specific requestId', async () => {
+  it('should be cancel request only specific requestKey', async () => {
     const api = useApi()
-    const a   = api.get('/api/ping', { requestId: 'ping/i' })
-    const b   = api.get('/api/ping', { requestId: 'ping/j' })
+    const a   = api.get('/api/ping', { requestKey: 'ping/i' })
+    const b   = api.get('/api/ping', { requestKey: 'ping/j' })
 
     api.cancel('ping/i')
 
@@ -92,8 +61,8 @@ describe('cancel', () => {
 describe('cancelAll', () => {
   it('should be cancel all active request', async () => {
     const api = useApi()
-    const a   = api.get('/api/ping', { requestId: 'ping/x' })
-    const b   = api.get('/api/ping', { requestId: 'ping/y' })
+    const a   = api.get('/api/ping', { requestKey: 'ping/x' })
+    const b   = api.get('/api/ping', { requestKey: 'ping/y' })
 
     api.cancelAll()
 

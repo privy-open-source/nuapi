@@ -1,6 +1,6 @@
 {
   "name": "@privyid/nuapi",
-  "version": "0.3.0-alpha.4",
+  "version": "0.3.0-alpha.6",
   "description": "Nuxt HTTP Client module",
   "packageManager": "yarn@4.4.0",
   "repository": {
@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "prepack": "yarn build",
-    "build": "nuxt-module-build",
+    "build": "nuxt-module-build build",
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
@@ -47,11 +47,14 @@
     "coverage": "vitest run src --coverage --config ./vitest.config.ts"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.7.4",
+    "@nuxt/kit": "^3.12.4",
     "axios": "^1.7.2",
-    "defu": "^6.1.2",
-    "ofetch": "^1.3.3",
-    "ufo": "^1.3.1"
+    "defu": "^6.1.4",
+    "ofetch": "^1.3.4",
+    "ufo": "^1.5.4"
+  },
+  "peerDependencies": {
+    "nuxt": ">=3.4.0"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "0.5.0",
@@ -62,9 +65,8 @@
     "@privyid/nhp": "1.0.0",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "@vitest/coverage-c8": "0.30.1",
+    "@vitest/coverage-v8": "^2.0.5",
     "@vue/eslint-config-typescript": "13.0.0",
-    "axios-mock-adapter": "1.22.0",
     "changelogen": "0.5.5",
     "eslint": "8.57.0",
     "eslint-config-standard-with-typescript": "34.0.1",
@@ -72,7 +74,6 @@
     "eslint-plugin-align-assignments": "1.1.2",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-n": "15.7.0",
-    "eslint-plugin-n": "14.0.0",
     "eslint-plugin-promise": "6.6.0",
     "eslint-plugin-unicorn": "46.0.1",
     "eslint-plugin-varspacing": "1.2.2",
@@ -80,7 +81,7 @@
     "msw": "2.3.5",
     "nuxt": "3.12.4",
     "typescript": "5.5.4",
-    "vitest": "0.30.1"
+    "vitest": "2.0.5"
   },
   "publishConfig": {
     "access": "public"

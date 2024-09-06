@@ -49,11 +49,16 @@ declare module 'axios' {
         504, // Gateway Timeout
       ]
     */
-    retryStatus?: number[],
+    retryStatus?: number[] | ((statuses: number[]) => number[]),
     /**
      * Custom condition method
      */
     retryOn?: RetryOnHandler,
+    /**
+     * Retry delay
+     * @default 1000
+     */
+    retryDelay?: number,
   }
 }
 
@@ -92,6 +97,9 @@ export interface ApiInstance extends AxiosInstance {
   cancelAll: InstanceType<typeof DedupeAdapter>['cancelAll'],
   dedupe: DedupeAdapter,
   queue: QueueAdapter,
+  fetch: FetchAdapter,
+  retry: RetryAdapter,
+  parent?: ApiInstance,
   create: (this: ApiInstance, config?: ApiConfig) => ApiInstance,
 }
 
@@ -100,10 +108,10 @@ export interface LazyInstance {
   setApi: (instance: ApiInstance) => void,
 }
 
-function resolveOptions (options: ApiConfig | (() => ApiConfig)) {
-  return typeof options === 'function'
-    ? options()
-    : options
+function toValue<T extends object = any> (value: T | (() => T)) {
+  return typeof value === 'function'
+    ? value()
+    : value
 }
 
 /**
@@ -121,8 +129,8 @@ export function createLazyton (options: ApiConfig | (() => ApiConfig) = {}, fres
   const getApi = function () {
     if (!api) {
       api = fresh
-        ? createApi(resolveOptions(options))
-        : useApi().create(resolveOptions(options))
+        ? createApi(toValue(options))
+        : useApi().create(toValue(options))
     }
 
     return api
@@ -154,16 +162,16 @@ export const setApi = useApi.setApi
  * Create new api instance
  * @param options
  */
-export function createApi (options: ApiConfig = {}): ApiInstance {
+export function createApi (options: ApiConfig = {}, parent?: ApiInstance): ApiInstance {
   /**
    * Adapter Pipeline:
    * Retry => Dedupe => Queue => Fetch
    */
   const originalAdapter = Axios.getAdapter(options.adapter ?? Axios.defaults.adapter)
-  const fetch           = new FetchAdapter(originalAdapter)
-  const queue           = new QueueAdapter(fetch.adapter(), options.queue)
-  const dedupe          = new DedupeAdapter(queue.adapter())
-  const retry           = new RetryAdapter(dedupe.adapter())
+  const fetch           = parent?.fetch ?? new FetchAdapter(originalAdapter)
+  const queue           = parent?.queue ?? new QueueAdapter(fetch.adapter(), options.queue)
+  const dedupe          = parent?.dedupe ?? new DedupeAdapter(queue.adapter())
+  const retry           = parent?.retry ?? new RetryAdapter(dedupe.adapter())
   const adapter         = retry.adapter()
   const instance        = Axios.create({ ...options, adapter })
 
@@ -177,15 +185,18 @@ export function createApi (options: ApiConfig = {}): ApiInstance {
   return Object.assign(instance, {
     queue,
     dedupe,
+    retry,
+    fetch,
     hooks,
+    parent,
     cancel   : dedupe.cancel.bind(dedupe),
     cancelAll: dedupe.cancelAll.bind(dedupe),
     create   : function (this: ApiInstance, newOptions: ApiConfig = {}): ApiInstance {
-      const instance = createApi(defu(
+      const instance = createApi(defu<ApiConfig, [ApiConfig, ApiConfig]>(
         newOptions,
         { adapter: originalAdapter },
         options,
-      ))
+      ), this)
 
       return copyHook(this, instance)
     },
