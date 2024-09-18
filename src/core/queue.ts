@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/promise-function-async */
 import Axios, {
   type AxiosAdapter,
   type AxiosPromise,
@@ -14,6 +15,10 @@ interface QueueJob {
 }
 
 export interface QueueOptions {
+  /**
+   * Queue worker number
+   * @default 5
+   */
   worker: number,
 }
 
@@ -27,7 +32,7 @@ export enum QueuePriority {
    */
   MEDIUM = 20,
   /**
-   * Low priority
+   * Lower priority
    */
   LOW = 10,
 }
@@ -68,7 +73,6 @@ export default class QueueAdapter {
     return this.queue.pop()
   }
 
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
   protected add (config: InternalAxiosRequestConfig): AxiosPromise {
     return new Promise((resolve, reject) => {
       const onResolved: QueueJob['resolve'] = (response) => {
@@ -102,7 +106,11 @@ export default class QueueAdapter {
         }
 
         this.enqueue(queue)
-        this.run()
+
+        // Next tick
+        queueMicrotask(() => {
+          this.run()
+        })
       }
     })
   }
@@ -134,7 +142,6 @@ export default class QueueAdapter {
   }
 
   public adapter (): AxiosAdapter {
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
     return (config) => {
       return this.add(config)
     }

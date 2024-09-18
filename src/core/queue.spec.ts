@@ -51,11 +51,11 @@ describe('QueueAdapter', () => {
 
     expect(result).toHaveLength(5)
     expect(result).toStrictEqual([
+      5, // High priority
       1,
-      5,
       2,
       4,
-      3,
+      3, // Low priority
     ])
   })
 })
