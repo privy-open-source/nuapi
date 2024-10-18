@@ -2570,9 +2570,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/module-builder@npm:0.8.1":
-  version: 0.8.1
-  resolution: "@nuxt/module-builder@npm:0.8.1"
+"@nuxt/module-builder@npm:0.8.4":
+  version: 0.8.4
+  resolution: "@nuxt/module-builder@npm:0.8.4"
   dependencies:
     citty: "npm:^0.1.6"
     consola: "npm:^3.2.3"
@@ -2580,16 +2580,16 @@ __metadata:
     magic-regexp: "npm:^0.8.0"
     mlly: "npm:^1.7.1"
     pathe: "npm:^1.1.2"
-    pkg-types: "npm:^1.1.1"
-    tsconfck: "npm:^3.1.1"
+    pkg-types: "npm:^1.2.0"
+    tsconfck: "npm:^3.1.3"
     unbuild: "npm:^2.0.0"
   peerDependencies:
-    "@nuxt/kit": ^3.12.2
-    nuxi: ^3.12.0
+    "@nuxt/kit": ^3.13.1
+    nuxi: ^3.13.1
   bin:
     nuxt-build-module: dist/cli.mjs
     nuxt-module-build: dist/cli.mjs
-  checksum: 10/e9a87585bf3473fce6c2932a123ca72c8efcc440b8a615a92efed9d5366a1c3f1a18cc60199626883086af2e1fe6efac048ab57fb7508fe17b91f167dccde02f
+  checksum: 10/eb38f098af92d84113ed49c6bad2144db25d0353070b4fb8450b3537bad2617e6ed06ada68b179bbbffd3d6199829af25d93d1d6099d685a0889164d15b56822
   languageName: node
   linkType: hard
 
@@ -3045,7 +3045,7 @@ __metadata:
   dependencies:
     "@nuxt/eslint-config": "npm:0.5.0"
     "@nuxt/kit": "npm:^3.7.4"
-    "@nuxt/module-builder": "npm:0.8.1"
+    "@nuxt/module-builder": "npm:0.8.4"
     "@nuxt/schema": "npm:3.13.2"
     "@nuxt/test-utils": "npm:3.14.2"
     "@privyid/eslint-config-persona": "npm:0.27.0"
@@ -14288,9 +14288,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfck@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "tsconfck@npm:3.1.1"
+"tsconfck@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "tsconfck@npm:3.1.3"
   peerDependencies:
     typescript: ^5.0.0
   peerDependenciesMeta:
@@ -14298,7 +14298,7 @@ __metadata:
       optional: true
   bin:
     tsconfck: bin/tsconfck.js
-  checksum: 10/a4456577f540212516d7eb530005893739aadd6da00787914a8ed9aa19c3f2f306b8912920aa440b9b8978f10c9dadbd062b8c2a2f0ff1f6c2d4272b5be2ef34
+  checksum: 10/bf9b9b72de5b83f833f5dea8b276e77bab08e85751589f36dd23854fa3d5f7955194086fb8424df388bf232f2fc9a067d7913bfa674cb1217be0bba648ec71f2
   languageName: node
   linkType: hard
 
