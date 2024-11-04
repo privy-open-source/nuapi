@@ -59,7 +59,7 @@
     "@nuxt/schema": "3.13.2",
     "@nuxt/test-utils": "3.14.2",
     "@privyid/eslint-config-persona": "0.27.0",
-    "@privyid/nhp": "1.0.0",
+    "@privyid/nhp": "1.0.1",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "@vitest/coverage-c8": "0.30.1",
