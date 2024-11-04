@@ -65,7 +65,7 @@
     "@vitest/coverage-c8": "0.30.1",
     "@vue/eslint-config-typescript": "13.0.0",
     "axios-mock-adapter": "2.1.0",
-    "changelogen": "0.5.5",
+    "changelogen": "0.5.7",
     "eslint": "8.57.0",
     "eslint-config-standard-with-typescript": "34.0.1",
     "eslint-formatter-pretty": "5.0.0",
