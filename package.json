@@ -1,8 +1,8 @@
 {
   "name": "@privyid/nuapi",
-  "version": "0.3.0-alpha.6",
+  "version": "1.0.0",
   "description": "Nuxt HTTP Client module",
-  "packageManager": "yarn@4.4.0",
+  "packageManager": "yarn@4.5.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/privy-open-source/nuapi.git"
@@ -65,7 +65,7 @@
     "@privyid/nhp": "1.0.1",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "@vitest/coverage-v8": "^2.0.5",
+    "@vitest/coverage-v8": "2.1.8",
     "@vue/eslint-config-typescript": "13.0.0",
     "changelogen": "0.5.5",
     "eslint": "8.57.0",
@@ -81,7 +81,7 @@
     "msw": "2.3.5",
     "nuxt": "3.13.2",
     "typescript": "5.5.4",
-    "vitest": "2.0.5"
+    "vitest": "2.1.8"
   },
   "publishConfig": {
     "access": "public"
