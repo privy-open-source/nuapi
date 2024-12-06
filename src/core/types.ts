@@ -107,4 +107,4 @@ export interface ApiInstance extends AxiosInstance {
   create: (this: ApiInstance, config?: ApiConfig) => ApiInstance,
 }
 
-export type ApiResolver = () => ApiInstance | undefined
+export type ApiResolver = () => ApiInstance

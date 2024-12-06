@@ -1,5 +1,6 @@
 import {
   defineNuxtPlugin,
+  useNuxtApp,
   useRequestEvent,
   useRequestHeaders,
   useRequestURL,
@@ -9,6 +10,7 @@ import {
   type ApiInstance,
   createApi,
   setApi,
+  setResolver,
 } from '@privyid/nuapi/core'
 import { joinURL } from 'ufo'
 
@@ -34,9 +36,13 @@ export default defineNuxtPlugin({
         baseURL: joinURL(url.origin, config.app.baseURL),
         headers,
       })
+    }
 
+    if (import.meta.server) {
       if (event)
         event.$api = instance
+
+      setResolver(() => useNuxtApp().$api)
     }
 
     setApi(instance)

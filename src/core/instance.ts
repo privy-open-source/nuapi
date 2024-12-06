@@ -28,20 +28,20 @@ function toValue<T extends object = any> (value: T | (() => T)) {
  *  useApi().get('/url/endpoint/')
  */
 export function createLazyton (options: ApiConfig | (() => ApiConfig) = {}, fresh = false): LazyInstance {
-  let api: ApiInstance
+  let $api: ApiInstance
 
   const getApi = function () {
-    if (!api) {
-      api = fresh
+    if (!$api) {
+      $api = fresh
         ? createApi(toValue(options))
         : useApi().create(toValue(options))
     }
 
-    return api
+    return $api
   }
 
   const setApi = function (instance: ApiInstance) {
-    api = instance
+    $api = instance
   }
 
   return Object.assign(getApi, { setApi })
