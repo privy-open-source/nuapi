@@ -1,15 +1,12 @@
-import { type AxiosResponse } from 'axios'
 import {
   describe,
-  it,
   expect,
+  it,
   vi as jest,
 } from 'vitest'
+import { useApi } from './global'
 import {
-  type RequestHook,
-  type ResponseHook,
-  createApi,
-  createLazyton,
+  copyHook,
   onError,
   onRequest,
   onRequestError,
@@ -17,33 +14,10 @@ import {
   onResponseError,
   removeHook,
   resetHook,
-  setApi,
-  useApi,
-  copyHook,
-} from '.'
-
-describe('useApi', () => {
-  it('should return same instance and same instance (singleton)', () => {
-    const a = useApi()
-    const b = useApi()
-
-    expect(a).toStrictEqual(b)
-  })
-})
-
-describe('setApi', () => {
-  it('should be able to replace global instance', () => {
-    const old   = useApi()
-    const fresh = createApi()
-
-    setApi(fresh)
-
-    const last = useApi()
-
-    expect(last).toStrictEqual(fresh)
-    expect(last).not.toStrictEqual(old)
-  })
-})
+} from './hooks'
+import type { AxiosResponse } from 'axios'
+import type { RequestHook, ResponseHook } from './types'
+import { createApi } from './instance'
 
 describe('Hooks utils', () => {
   it('should be able to registering on-request hook using onRequest()', async () => {
@@ -175,81 +149,5 @@ describe('copyHook', () => {
 
     expect(fn).toBeCalled()
     expect(fn).toBeCalledWith(expected)
-  })
-})
-
-describe('Inherit instance', () => {
-  it('should be able to create new instance with same config', async () => {
-    const a = createApi({ baseURL: `${process.env.BASE_URL as string}/v1`, headers: { foo: 'bar' } })
-    const b = a.create({ baseURL: `${process.env.BASE_URL as string}/v2` })
-
-    expect(b).not.toStrictEqual(a)
-
-    const response = await b.get('/api/ping')
-
-    expect(response.config.headers?.foo).toBe('bar')
-    expect(response.data.data).toStrictEqual({ version: 'v2' })
-  })
-
-  it('should be copy hook to new instance', async () => {
-    const a  = createApi({ baseURL: `${process.env.BASE_URL as string}/v1`, headers: { foo: 'bar' } })
-    const fn = jest.fn((config) => config)
-
-    onRequest(fn, a)
-
-    const b        = a.create({ baseURL: `${process.env.BASE_URL as string}/v2` })
-    const expected = expect.objectContaining({
-      baseURL: `${process.env.BASE_URL as string}/v2`,
-      headers: expect.objectContaining({ foo: 'bar' }),
-    })
-
-    await b.get('/api/ping')
-
-    expect(fn).toBeCalled()
-    expect(fn).toBeCalledWith(expected)
-  })
-
-  it('should prefixing baseUrl if prefixURL is present', async () => {
-    const a        = createApi({ baseURL: process.env.BASE_URL, headers: { foo: 'bar' } })
-    const b        = a.create({ prefixURL: 'api' })
-    const response = await b.get('user')
-
-    expect(response.status).toBe(200)
-    expect(response.data.data).toBe('data-user')
-  })
-})
-
-describe('lazyton', () => {
-  it('should create lazy instance', () => {
-    const useLazy = createLazyton({ baseURL: '/v1' })
-
-    const a = useLazy()
-    const b = useLazy()
-
-    expect(typeof useLazy).toBe('function')
-    expect(a).toStrictEqual(b)
-  })
-
-  it('should inherit hook from global', async () => {
-    const useLazy = createLazyton({ prefixURL: '/api' })
-    const fn      = jest.fn((config) => config)
-
-    onRequest(fn)
-
-    await useLazy().get('/ping')
-
-    expect(fn).toBeCalled()
-  })
-
-  it('should create fresh instace if parameter fresh set to true', async () => {
-    const useLazy = createLazyton({ baseURL: `${process.env.BASE_URL as string}/api` }, true)
-    const fn      = jest.fn((config) => config)
-    const a       = useLazy()
-
-    onRequest(fn)
-
-    await a.get('/ping')
-
-    expect(fn).not.toBeCalled()
   })
 })

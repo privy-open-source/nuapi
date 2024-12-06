@@ -9,24 +9,12 @@ export default defineNuxtModule({
   meta: {
     name         : '@privyid/nuapi',
     configKey    : 'nuapi',
-    compatibility: { nuxt: '>=3.0.0' },
+    compatibility: { nuxt: '>=3.4.0' },
   },
   setup () {
     const { resolve } = createResolver(import.meta.url)
 
-    addPlugin({
-      name : 'nuapi-plugin',
-      mode : 'server',
-      src  : resolve('runtime/api.server'),
-      order: -20,
-    })
-
-    addPlugin({
-      name : 'nuapi-plugin',
-      mode : 'client',
-      src  : resolve('runtime/api.client'),
-      order: -20,
-    })
+    addPlugin(resolve('runtime/api'))
 
     extendViteConfig((config) => {
       config.optimizeDeps?.include?.push('axios')
