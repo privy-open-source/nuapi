@@ -1788,9 +1788,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/test-utils@npm:3.15.0":
-  version: 3.15.0
-  resolution: "@nuxt/test-utils@npm:3.15.0"
+"@nuxt/test-utils@npm:3.15.1":
+  version: 3.15.1
+  resolution: "@nuxt/test-utils@npm:3.15.1"
   dependencies:
     "@nuxt/kit": "npm:^3.14.1592"
     "@nuxt/schema": "npm:^3.14.1592"
@@ -1849,7 +1849,7 @@ __metadata:
       optional: true
     vitest:
       optional: true
-  checksum: 10/1cdea3abe36b73b33f9a840ff123b3e7a54af455487b7745c5b6845aea9b372feb795d207f8414debe2899c49d2f789d1a3d1c8e879c6d50ece8012b6c174515
+  checksum: 10/4e6e3514fcb823110bdfeee7dacb4b81b4f22b355fd1979cc98f6719cd23d19491dccd5c70177fb1dee97e1d7edd8f1a310de8cdf9214c23fe83b039ec979578
   languageName: node
   linkType: hard
 
@@ -2208,7 +2208,7 @@ __metadata:
     "@nuxt/kit": "npm:^3.13.2"
     "@nuxt/module-builder": "npm:0.8.4"
     "@nuxt/schema": "npm:3.14.1592"
-    "@nuxt/test-utils": "npm:3.15.0"
+    "@nuxt/test-utils": "npm:3.15.1"
     "@privyid/eslint-config-persona": "npm:0.27.0"
     "@privyid/nhp": "npm:1.0.1"
     "@typescript-eslint/eslint-plugin": "npm:5.62.0"
