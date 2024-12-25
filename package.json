@@ -59,7 +59,7 @@
   "devDependencies": {
     "@nuxt/eslint-config": "0.7.2",
     "@nuxt/module-builder": "0.8.4",
-    "@nuxt/schema": "3.14.1592",
+    "@nuxt/schema": "3.15.0",
     "@nuxt/test-utils": "3.15.1",
     "@privyid/eslint-config-persona": "1.0.0",
     "@privyid/nhp": "1.0.1",
@@ -79,7 +79,7 @@
     "eslint-plugin-varspacing": "1.2.2",
     "eslint-plugin-vue": "9.32.0",
     "msw": "2.6.8",
-    "nuxt": "3.14.1592",
+    "nuxt": "3.15.0",
     "typescript": "5.7.2",
     "vitest": "2.1.8"
   },
