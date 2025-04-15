@@ -87,7 +87,7 @@
     "access": "public"
   },
   "resolutions": {
-    "http-proxy": "npm:http-proxy-node16@1.0.5",
+    "http-proxy": "npm:http-proxy-node16@1.0.6",
     "rollup": "npm:@rollup/wasm-node@*"
   }
 }
