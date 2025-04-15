@@ -7438,14 +7438,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy@npm:http-proxy-node16@1.0.5":
-  version: 1.0.5
-  resolution: "http-proxy-node16@npm:1.0.5"
+"http-proxy@npm:http-proxy-node16@1.0.6":
+  version: 1.0.6
+  resolution: "http-proxy-node16@npm:1.0.6"
   dependencies:
     eventemitter3: "npm:^4.0.0"
     follow-redirects: "npm:^1.0.0"
     requires-port: "npm:^1.0.0"
-  checksum: 10/8fdbf2690e8a1967d37162a7fc5f22e23dedf6cc52a285c7b437fdf95f367e5098f004b3e021b2728f2c604c1d2d544f64d628cb8038c4701e17f73197aa07ab
+  checksum: 10/983fd6aaf13685694eb4c5427962adf4708ec4afbdbc83b7249f1ff1ca0afd586885934a62926e147cb16bf1ef249c3b93dfa1af0f89cc2f42d05e08c8ba4474
   languageName: node
   linkType: hard
 
