@@ -65,7 +65,7 @@
     "@privyid/nhp": "1.0.1",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "@vitest/coverage-v8": "2.1.8",
+    "@vitest/coverage-v8": "2.1.9",
     "@vue/eslint-config-typescript": "13.0.0",
     "changelogen": "0.6.1",
     "eslint": "8.57.1",
@@ -81,7 +81,7 @@
     "msw": "2.8.2",
     "nuxt": "3.17.1",
     "typescript": "5.8.3",
-    "vitest": "2.1.8"
+    "vitest": "2.1.9"
   },
   "publishConfig": {
     "access": "public"
