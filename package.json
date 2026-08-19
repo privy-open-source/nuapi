@@ -80,7 +80,7 @@
     "eslint-plugin-vue": "9.32.0",
     "msw": "2.15.0",
     "nuxt": "3.17.1",
-    "typescript": "5.8.3",
+    "typescript": "5.9.3",
     "vitest": "2.1.9"
   },
   "publishConfig": {
